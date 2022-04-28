@@ -18,8 +18,12 @@ const links = ref([
         path: '/v1',
     },
     {
-        name: 'Contact',
-        path: '/contact',
+        name: 'V2',
+        path: '/v2',
+    },
+    {
+        name: 'V3',
+        path: '/v3',
     },
 ])
 </script>

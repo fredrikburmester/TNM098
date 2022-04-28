@@ -1,16 +1,10 @@
 <template>
-    <v-chart class="chart" :option="option" />
+    <v-chart class="chart" :option="option" :loading="loading" />
 </template>
 
 <script>
-import { use } from 'echarts/core'
-import { CanvasRenderer } from 'echarts/renderers'
-import { PieChart } from 'echarts/charts'
-import { TitleComponent, TooltipComponent, LegendComponent } from 'echarts/components'
 import VChart, { THEME_KEY } from 'vue-echarts'
 import { ref, defineComponent } from 'vue'
-
-use([CanvasRenderer, PieChart, TitleComponent, TooltipComponent, LegendComponent])
 
 export default defineComponent({
     name: 'HelloWorld',
@@ -18,7 +12,7 @@ export default defineComponent({
         VChart,
     },
     provide: {
-        [THEME_KEY]: 'dark',
+        [THEME_KEY]: 'light',
     },
     setup() {
         const option = ref({
@@ -61,11 +55,18 @@ export default defineComponent({
 
         return { option }
     },
+    data() {
+        return {
+            loading: true,
+        }
+    },
 })
 </script>
 
 <style scoped>
 .chart {
+    padding: 30px;
     height: 400px;
+    background-color: white;
 }
 </style>
