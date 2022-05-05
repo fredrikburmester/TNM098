@@ -2,7 +2,7 @@
 import { RouterView } from 'vue-router'
 import NavBar from './components/NavBarComponent.vue'
 
-import { useUserStore } from '@/stores/user'
+// import { useUserStore } from '@/stores/user'
 import { mapWritableState, mapActions } from 'pinia'
 
 export default {
@@ -18,7 +18,7 @@ export default {
         }
     },
     computed: {
-        ...mapWritableState(useUserStore, ['authenticated']),
+        // ...mapWritableState(useUserStore, ['authenticated']),
     },
 }
 </script>
