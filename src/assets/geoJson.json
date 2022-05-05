@@ -34,7 +34,7 @@
                     ]
                 ]
             },
-            "properties": { "name": "Palace Hills" }
+            "properties": { "loc": 1, "name": "Palace Hills" }
         },
         {
             "type": "Feature",
@@ -74,7 +74,7 @@
                     ]
                 ]
             },
-            "properties": { "name": "Northwest" }
+            "properties": { "loc": 2, "name": "Northwest" }
         },
         {
             "type": "Feature",
@@ -119,7 +119,7 @@
                     ]
                 ]
             },
-            "properties": { "name": "Old Town" }
+            "properties": { "loc": 3, "name": "Old Town" }
         },
         {
             "type": "Feature",
