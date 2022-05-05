@@ -35,11 +35,10 @@ export default {
         }
     },
     computed: {
-        ...mapWritableState(useAreasStore, ['areas']),
+        ...mapWritableState(useAreasStore, ['areas', 'reports']),
     },
-    mounted() {
+    async mounted() {
         let local_areas = []
-        console.log(geoJson)
 
         for (let area of geoJson.features) {
             let id = area.properties.loc
@@ -50,10 +49,49 @@ export default {
                 name,
                 color: this.generateRandomColor(),
                 priority: 0,
+                reports: [],
             })
         }
 
-        console.log(local_areas)
+        let lines
+        await fetch('mc1-reports-data.txt')
+            .then((res) => res.text())
+            .then((data) => {
+                lines = data.split('\n')
+            })
+
+        let reports = {}
+
+        for (let r of lines) {
+            let report_data = r.split(',')
+
+            let date = report_data[0]
+            let sewer_and_water = parseFloat(report_data[1] || -1)
+            let power = parseFloat(report_data[2] || -1)
+            let roads_and_bridges = parseFloat(report_data[3] || -1)
+            let medical = parseFloat(report_data[4] || -1)
+            let buildings = parseFloat(report_data[5] || -1)
+            let shake_intensity = parseFloat(report_data[6] || -1)
+            let loc = report_data[7]
+
+            let report = {
+                sewer_and_water,
+                power,
+                roads_and_bridges,
+                medical,
+                buildings,
+                shake_intensity,
+                loc,
+            }
+
+            if (reports[date]) {
+                reports[date].push(report)
+            } else {
+                reports[date] = [report]
+            }
+        }
+
+        this.reports = reports
         this.areas = local_areas
 
         this.loading = false
