@@ -11,7 +11,7 @@ export const hash = Math.floor(Math.random() * 90000) + 10000
 export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, process.cwd())
     return {
-        plugins: [vue(), vueJsx(), eslintPlugin()],
+        plugins: [vue(), vueJsx(), eslintPlugin({ cache: false })],
         resolve: {
             alias: {
                 '@': fileURLToPath(new URL('./src', import.meta.url)),
