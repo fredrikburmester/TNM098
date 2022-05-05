@@ -4,7 +4,6 @@ import HomeView from '../views/HomeView.vue'
 import VisualizationOneView from '../views/VisualizationOneView.vue'
 import VisTwo from '../views/VisTwo.vue'
 import VisThree from '../views/VisThree.vue'
-import { useUserStore } from '@/stores/user'
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -51,8 +50,6 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to) => {
-    const store = useUserStore()
-
     if (to.meta.requiresAuth) {
         // check if user is logged in
     }
