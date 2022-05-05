@@ -1,33 +1,73 @@
 <template>
-    <div class="hero bg-base-100 place-self-center">
-        <div class="hero-content text-center">
-            <div class="max-w-md">
-                <h1 class="text-5xl font-bold">Hello there</h1>
-                <p class="py-6">
-                    Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda excepturi exercitationem quasi. In deleniti eaque aut repudiandae et a id
-                    nisi.
-                </p>
-                <button class="btn btn-primary">Get Started</button>
+    <div v-if="!loading" class="grid grid-rows-2">
+        <div class="grid grid-cols-3">
+            <div>
+                <OptionsComponent />
             </div>
+            <div>
+                <MapComponent />
+            </div>
+            <div>
+                <PriorityList />
+            </div>
+        </div>
+        <div class="">
+            <HeatMap />
         </div>
     </div>
 </template>
 
 <script>
-import { useUserStore } from '@/stores/user'
 import { mapWritableState } from 'pinia'
+import HeatMap from '../components/HeatMap.vue'
+import MapComponent from '../components/MapComponent.vue'
+import OptionsComponent from '../components/OptionsComponent.vue'
+import PriorityList from '../components/PriorityList.vue'
+import geoJson from '@/assets/geoJson.json'
+import { useAreasStore } from '@/stores/areas'
 
 export default {
+    components: { HeatMap, MapComponent, OptionsComponent, PriorityList },
     props: {},
     data() {
-        return {}
+        return {
+            loading: true,
+        }
     },
     computed: {
-        ...mapWritableState(useUserStore, ['authenticated']),
+        ...mapWritableState(useAreasStore, ['areas']),
     },
-    mounted() {},
+    mounted() {
+        let local_areas = []
+        console.log(geoJson)
 
-    methods: {},
+        for (let area of geoJson.features) {
+            let id = area.properties.loc
+            let name = area.properties.name
+
+            local_areas.push({
+                id,
+                name,
+                color: this.generateRandomColor(),
+                priority: 0,
+            })
+        }
+
+        console.log(local_areas)
+        this.areas = local_areas
+
+        this.loading = false
+    },
+    methods: {
+        generateRandomColor() {
+            let letters = '0123456789ABCDEF'
+            let color = '#'
+            for (let i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)]
+            }
+            return color
+        },
+    },
 }
 </script>
 
