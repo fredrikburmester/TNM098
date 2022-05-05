@@ -30,21 +30,46 @@ export default defineComponent({
         const areasStore = useAreasStore()
         const area_names = areasStore.areas.map((area) => area.name)
 
+        const reports = areasStore.reports
+
+        console.log('data', Object.keys(reports))
+
         console.log('area names', area_names)
+        const keys = Object.keys(reports)
+
+        const date_keys = keys.map((key) => new Date(key))
 
         const option = {
             tooltip: {
                 position: 'top',
             },
+            toolbox: {
+                feature: {
+                    dataZoom: {
+                        yAxisIndex: false,
+                    },
+                    saveAsImage: {
+                        pixelRatio: 2,
+                    },
+                },
+            },
+            dataZoom: [
+                {
+                    type: 'inside',
+                },
+                {
+                    type: 'slider',
+                },
+            ],
             grid: {
                 height: '50%',
                 top: '10%',
             },
             xAxis: {
-                type: 'category',
-                data: entries,
+                type: 'value',
+                data: date_keys,
                 splitArea: {
-                    show: true,
+                    show: false,
                 },
             },
             yAxis: {
@@ -64,7 +89,7 @@ export default defineComponent({
             },
             series: [
                 {
-                    name: 'Punch Card',
+                    name: 'Heat Map',
                     type: 'heatmap',
                     data: data,
                     label: {
