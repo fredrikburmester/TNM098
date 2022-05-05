@@ -9,7 +9,7 @@ import VChart, { THEME_KEY } from 'vue-echarts'
 import { ref, defineComponent } from 'vue'
 import busLinesJson from '@/assets/lines-bus.json'
 import geoJson from '@/assets/geoJson.json'
-import usaJson from '@/assets/usaJson.json'
+//import usaJson from '@/assets/usaJson.json'
 import * as echarts from 'echarts'
 
 export default defineComponent({
