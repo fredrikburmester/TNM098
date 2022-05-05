@@ -5,6 +5,7 @@ export const useAreasStore = defineStore({
     state: () => ({
         areas: [],
         selectedArea: '',
+        reports: null,
     }),
     getters: {},
     actions: {},
