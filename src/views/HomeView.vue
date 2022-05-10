@@ -1,6 +1,6 @@
 <template>
-    <div v-if="!loading" class="grid grid-rows-2">
-        <div class="grid grid-cols-3">
+    <div v-if="!loading" class="grid grid-rows-2 p-4" style="background-color: #100c2a">
+        <div class="grid grid-cols-3 gap-4">
             <div>
                 <OptionsComponent />
             </div>
@@ -12,7 +12,8 @@
             </div>
         </div>
         <div class="">
-            <HeatMap />
+            <!-- <HeatMap /> -->
+            <LineChart />
         </div>
     </div>
 </template>
@@ -25,9 +26,10 @@ import OptionsComponent from '../components/OptionsComponent.vue'
 import PriorityList from '../components/PriorityList.vue'
 import geoJson from '@/assets/geoJson.json'
 import { useAreasStore } from '@/stores/areas'
+import LineChart from '../components/LineChart.vue'
 
 export default {
-    components: { HeatMap, MapComponent, OptionsComponent, PriorityList },
+    components: { HeatMap, MapComponent, OptionsComponent, PriorityList, LineChart },
     props: {},
     data() {
         return {
@@ -35,14 +37,17 @@ export default {
         }
     },
     computed: {
-        ...mapWritableState(useAreasStore, ['areas', 'reports']),
+        ...mapWritableState(useAreasStore, ['areas', 'reports', 'perLineData', 'areaNames']),
     },
     async mounted() {
         let local_areas = []
+        let local_area_names = []
 
         for (let area of geoJson.features) {
             let id = area.properties.loc
             let name = area.properties.name
+
+            local_area_names.push({ id: id, name: name })
 
             local_areas.push({
                 id,
@@ -53,12 +58,34 @@ export default {
             })
         }
 
+        console.log(local_area_names)
+
         let lines
         await fetch('mc1-reports-data.txt')
             .then((res) => res.text())
             .then((data) => {
                 lines = data.split('\n')
             })
+
+        this.perLineData = lines.map((line) => {
+            let obj = {}
+            let parts = line.split(',')
+            obj.datetime = parts[0]
+            obj.sewer_and_water = parts[1]
+            obj.power = parts[2]
+            obj.roads_and_bridges = parts[3]
+            obj.medical = parts[4]
+            obj.buildings = parts[5]
+            obj.shake_intensity = parts[6]
+            obj.location = parts[7]
+
+            return obj
+        })
+
+        // sort this.perLineData based on datetime
+        this.perLineData.sort((a, b) => {
+            return new Date(a.datetime) - new Date(b.datetime)
+        })
 
         let reports = {}
 
