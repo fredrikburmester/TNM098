@@ -34,9 +34,7 @@ export default defineComponent({
 
         let option = {
             title: {
-                text: 'USA Population Estimates (2012)',
-                subtext: 'Data from www.census.gov',
-                sublink: 'http://www.census.gov/popest/data/datasets.html',
+                text: 'Areas',
                 left: 'right',
             },
             tooltip: {

@@ -1,11 +1,11 @@
 <template>
     <div>
-        <h1>Categories</h1>
+        <h1 class="text-xl text-white font-bold pb-4">Categories</h1>
         <div class="form-control">
-            <label v-for="c in categories" :key="c" class="label cursor-pointer">
-                <span class="label-text">{{ c }}</span>
-                <input type="checkbox" class="toggle" checked />
-            </label>
+            <select v-model="localSelectedCategory" class="select text-black bg-slate-300 select-bordered w-full max-w-xs">
+                <option disabled selected>Select Value</option>
+                <option v-for="(category, index) in categories" :key="index" :value="index">{{ getNiceCategoryName(index) }}</option>
+            </select>
         </div>
     </div>
 </template>
@@ -18,12 +18,23 @@ export default {
     components: {},
     props: {},
     data() {
-        return {}
+        return {
+            localSelectedCategory: 0,
+        }
     },
     computed: {
-        ...mapWritableState(useCategoriesStore, ['categories']),
+        ...mapWritableState(useCategoriesStore, ['categories', 'selectedCategory', 'categoryNames']),
+    },
+    watch: {
+        localSelectedCategory(newValue) {
+            this.selectedCategory = newValue
+        },
     },
     mounted() {},
-    methods: {},
+    methods: {
+        getNiceCategoryName(category) {
+            return this.categoryNames[category]
+        },
+    },
 }
 </script>

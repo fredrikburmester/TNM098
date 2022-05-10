@@ -8,6 +8,8 @@ import { THEME_KEY } from 'vue-echarts'
 import { defineComponent } from 'vue'
 import geoJson from '@/assets/geoJson.json'
 import * as echarts from 'echarts'
+import { useAreasStore } from '@/stores/areas'
+import { mapWritableState } from 'pinia'
 
 export default defineComponent({
     name: 'HelloWorld',
@@ -19,43 +21,33 @@ export default defineComponent({
             loading: false,
         }
     },
+    computed: {
+        ...mapWritableState(useAreasStore, ['areas', 'reports', 'perLineData', 'selectedArea', 'areaNames']),
+    },
     mounted() {
-        var chartDom = document.getElementById('main__map')
-        var myChart = echarts.init(chartDom)
+        let chartDom = document.getElementById('main__map')
+        let myChart = echarts.init(chartDom, 'dark')
         echarts.registerMap('USA', geoJson)
 
-        console.log(chartDom.clientHeight)
+        console.log(this.areas)
 
         let option = {
             title: {
-                text: 'USA Population Estimates (2012)',
-                subtext: 'Data from www.census.gov',
-                sublink: 'http://www.census.gov/popest/data/datasets.html',
-                left: 'right',
-            },
-            tooltip: {
-                trigger: 'item',
-                showDelay: 0,
-                transitionDuration: 0.2,
+                text: 'Areas',
+                left: '0',
             },
             visualMap: {
                 left: 'right',
-                min: 500000,
-                max: 38000000,
+                dimension: 1,
+                min: 0,
+                max: 18,
                 inRange: {
                     color: ['#313695', '#4575b4', '#74add1', '#abd9e9', '#e0f3f8', '#ffffbf', '#fee090', '#fdae61', '#f46d43', '#d73027', '#a50026'],
                 },
                 text: ['High', 'Low'],
                 calculable: true,
-            },
-            toolbox: {
-                show: true,
-                left: 'left',
-                top: 'top',
-                feature: {
-                    dataView: { readOnly: false },
-                    restore: {},
-                    saveAsImage: {},
+                outOfRange: {
+                    color: 'blue',
                 },
             },
             series: [
@@ -69,27 +61,37 @@ export default defineComponent({
                             show: true,
                         },
                     },
-                    data: [{ name: 'Northwest', value: 4822023 }],
-                },
-                {
-                    name: 'USA PopEstimates',
-                    type: 'map',
-                    roam: true,
-                    map: 'USA',
-                    emphasis: {
-                        label: {
-                            show: true,
-                        },
-                    },
-                    data: [{ name: 'Palace Hills', value: 14822023 }],
+                    data: this.areas,
                 },
             ],
         }
+
         myChart.setOption(option)
+
+        myChart.on('click', (params) => {
+            let id = this.getAreaId(params.name)
+
+            if (id) {
+                if (id === this.selectedArea) {
+                    this.selectedArea = 0
+                } else {
+                    this.selectedArea = id
+                }
+            }
+
+            console.log(this.selectedArea)
+        })
     },
     methods: {
         generateRandomHexColor() {
             return '#' + Math.floor(Math.random() * 16777215).toString(16)
+        },
+        getAreaId(name) {
+            for (let area of this.areas) {
+                if (area.name == name) {
+                    return area.id
+                }
+            }
         },
     },
 })
@@ -104,5 +106,6 @@ export default defineComponent({
 #main__map {
     height: 500px;
     width: 100%;
+    background-color: gray;
 }
 </style>

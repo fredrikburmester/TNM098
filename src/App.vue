@@ -1,14 +1,9 @@
 <script>
 import { RouterView } from 'vue-router'
-import NavBar from './components/NavBarComponent.vue'
-
-// import { useUserStore } from '@/stores/user'
-import { mapWritableState, mapActions } from 'pinia'
 
 export default {
     name: 'App',
     components: {
-        NavBar,
         RouterView,
     },
     setup() {},
@@ -17,14 +12,10 @@ export default {
             route: this.$route,
         }
     },
-    computed: {
-        // ...mapWritableState(useUserStore, ['authenticated']),
-    },
 }
 </script>
 
 <template>
-    <NavBar />
     <RouterView v-slot="{ Component }">
         <template v-if="Component">
             <Transition name="fade" mode="out-in">
@@ -48,6 +39,7 @@ export default {
     min-height: 100vh;
     display: grid;
     grid-template-rows: auto 1fr;
+    background-color: #100c2a;
 }
 
 .fixed-center-button {

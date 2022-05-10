@@ -1,4 +1,5 @@
 <template>
+    <h1 class="text-white font-bold text-xl">Priority List</h1>
     <div id="main__priority_list"></div>
 </template>
 
@@ -13,7 +14,7 @@ import { useAreasStore } from '@/stores/areas'
 export default defineComponent({
     name: 'HelloWorld',
     provide: {
-        [THEME_KEY]: 'light',
+        [THEME_KEY]: 'dark',
     },
     data() {
         return {
@@ -31,7 +32,7 @@ export default defineComponent({
                 this.flags = res
             })
         var chartDom = document.getElementById('main__priority_list')
-        var myChart = echarts.init(chartDom)
+        var myChart = echarts.init(chartDom, 'dark')
 
         let areas = []
 
