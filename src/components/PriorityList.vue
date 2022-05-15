@@ -36,6 +36,8 @@ export default defineComponent({
 
         let areas = []
 
+        console.log(this.areas);
+
         for (let area of this.areas) {
             let obj = []
             obj.push(area.priority)
@@ -56,7 +58,7 @@ export default defineComponent({
                 max: 'dataMax',
                 axisLabel: {
                     formatter: function (n) {
-                        return Math.round(n) + ''
+                        return n
                     },
                 },
             },

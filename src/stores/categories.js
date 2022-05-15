@@ -26,6 +26,15 @@ export const useCategoriesStore = defineStore({
         medical: 0,
         buildings: 0,
         selectedCategory: 0,
+        // Map of selected categories allowing us to have multipile selected at once
+        selectedCategories: {
+            0: false,
+            1: false,
+            2: false,
+            3: false,
+            4: false,
+            5: false,
+        }
     }),
     getters: {},
     actions: {
