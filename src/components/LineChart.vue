@@ -25,13 +25,13 @@ export default defineComponent({
         let chartDom = document.getElementById('main__linechart')
         this.myChart = echarts.init(chartDom)
 
-        console.log(this.getDataPerLocation(1))
+        //console.log(this.getDataPerLocation(1))
 
         this.keys = Object.keys(this.reports).sort((a, b) => {
             return new Date(a) - new Date(b)
         })
 
-        console.log(this.keys)
+        //console.log(this.keys)
 
         this.option = {
             title: {
@@ -91,7 +91,7 @@ export default defineComponent({
 
             for (let i = 0; i < this.perLineData.length; i++) {
                 if (this.perLineData[i].location == location) {
-                    console.log(this.perLineData[i])
+                    //console.log(this.perLineData[i])
                     if (i > 0 && this.perLineData[i].datetime == this.perLineData[i - 1].datetime) {
                         try {
                             result[i - 1].sewer_and_water = (this.perLineData[i].sewer_and_water + this.perLineData[i - 1].sewer_and_water) / 2
@@ -114,8 +114,8 @@ export default defineComponent({
             let i = 0
             let data = this.getDataPerLocation(this.selectedArea)
 
-            console.log(data)
-            console.log('Data for this location: ', data)
+            //console.log(data)
+            //console.log('Data for this location: ', data)
             let currentKeys = []
 
             let j = 0
@@ -146,7 +146,7 @@ export default defineComponent({
 
                 this.myChart.setOption(this.option)
 
-                console.log(data[j], j, this.keys[i], i)
+                //console.log(data[j], j, this.keys[i], i)
 
                 i = i + 1
             }, (i + 1) * 100)
