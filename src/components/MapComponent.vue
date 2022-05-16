@@ -41,19 +41,32 @@ export default defineComponent({
                 text: 'Areas',
                 left: '0',
             },
+            tooltip: {
+                trigger: 'item',
+                showDelay: 0,
+                transitionDuration: 0.2
+            },
             visualMap: {
                 left: 'right',
-                dimension: 1,
                 min: 0,
                 max: 10,
                 inRange: {
-                    color: ['#313695', '#4575b4', '#74add1', '#abd9e9', '#e0f3f8', '#ffffbf', '#fee090', '#fdae61', '#f46d43', '#d73027', '#a50026'],
+                    color: [
+                    '#313695',
+                    '#4575b4',
+                    '#74add1',
+                    '#abd9e9',
+                    '#e0f3f8',
+                    '#ffffbf',
+                    '#fee090',
+                    '#fdae61',
+                    '#f46d43',
+                    '#d73027',
+                    '#a50026'
+                    ]
                 },
                 text: ['High', 'Low'],
-                calculable: true,
-                outOfRange: {
-                    color: 'blue',
-                },
+                calculable: true
             },
             series: [
                 {
@@ -67,7 +80,9 @@ export default defineComponent({
                             show: true,
                         }
                     }
-                    ,data: [],
+                    ,data: [
+                        {loc:1, value:10}
+                    ],
                 },
             ],
         }
@@ -84,7 +99,7 @@ export default defineComponent({
                     this.selectedArea = id
                 }
             }
-            console.log(this.selectedArea)
+            //console.log(this.selectedArea)
         })
         console.log(this.option)
     },
@@ -141,7 +156,7 @@ export default defineComponent({
 .chart {
     padding: 30px;
     height: 400px;
-    background-color: white;
+    /* background-color: white; */
 }
 #main__map {
     height: 500px;
