@@ -33,6 +33,11 @@ export default defineComponent({
         this.myChart = echarts.init(chartDom, 'dark')
         echarts.registerMap('USA', geoJson)
 
+        this.keys = Object.keys(this.reports).sort((a, b) => {
+            return new Date(a) - new Date(b)
+        })
+
+
         console.log(this.areas)
         console.log(this.reports)
 
@@ -68,27 +73,18 @@ export default defineComponent({
                 text: ['High', 'Low'],
                 calculable: true
             },
-            series: [
-                {
-                    name: 'USA PopEstimates',
-                    type: 'map',
-                    roam: true,
-                    map: 'USA',
-                    
-                    emphasis: {
-                        label: {
-                            show: true,
-                        }
-                    }
-                    ,data: [
-                        {loc:1, value:10}
-                    ],
-                },
-            ],
+            series: [{
+                name: 'USA PopEstimates',
+                type: 'map',
+                roam: true,
+                map: 'USA',
+                emphasis: {label: {show: true}},
+                data: []
+            }],
         }
         
         this.myChart.setOption(this.option)
-        this.updateChart();
+        this.updateChartTimer();
         
         this.myChart.on('click', (params) => {
             let id = this.getAreaId(params.name)
@@ -105,10 +101,8 @@ export default defineComponent({
     },
     methods: {
         // Add values from this.reports to this.option.series[0].data
-        updateChart() {
+        updateChart(date) {
             //replace current data with new data from next report
-            let date= "2020-04-06 00:00:00"
-            
             let currentData = []
             
             this.reports[date].map( report => {
@@ -126,7 +120,6 @@ export default defineComponent({
                     currentData.find(item => item.name === location).value += value
                 }
             })
-
             console.log(this.perLineData)
             console.log(currentData)
             this.option.series[0].data = currentData
@@ -148,6 +141,16 @@ export default defineComponent({
                 }
             }
         },
+
+        //Update chart every second
+        updateChartTimer() {
+            let i = -1
+            setInterval(() => {
+                i++
+                this.updateChart(this.keys[i])
+            }, 1000)
+        },
+
     },
 })
 </script>
