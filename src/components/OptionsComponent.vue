@@ -8,7 +8,7 @@
             </select> -->
             <div v-for='category in Object.keys(this.categories)' :key="category">
                 <label class="label cursor-pointer">
-                    <span class="label-text">{{getNiceCategoryName(category) + "ON"}}</span>
+                    <span class="text-white">{{getNiceCategoryName(category)}}</span>
                     <input 
                         v-if="this.selectedCategories[category] === true" 
                         @click="onToggle(category, false)" 
@@ -16,7 +16,7 @@
                         class="toggle toggle-primary" checked 
                     />
                     <input 
-                        v-if="this.selectedCategories[category] === false" 
+                        v-else 
                         @click="onToggle(category, true)" 
                         type="checkbox" 
                         class="toggle toggle-primary" 

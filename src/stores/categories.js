@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 export const useCategoriesStore = defineStore({
     id: 'categories',
     state: () => ({
+        numberOfCategories: 6,
         categories: {
             0: 'sewer_and_water',
             1: 'power',
