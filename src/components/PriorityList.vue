@@ -29,7 +29,7 @@ export default defineComponent({
     },
     computed: {
         ...mapWritableState(useAreasStore, ['areas', 'reports']),
-        ...mapWritableState(useCategoriesStore, ['categories', 'numberOfCategories'])
+        ...mapWritableState(useCategoriesStore, ['categories', 'numberOfCategories', 'selectedCategories'])
     },
     async mounted() {
         await fetch('https://cdn.jsdelivr.net/npm/emoji-flags@1.3.0/data.json')
