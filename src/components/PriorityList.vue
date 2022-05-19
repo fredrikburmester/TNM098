@@ -43,7 +43,7 @@ export default defineComponent({
         let areas = []
         for (let area of this.areas) {
             let obj = []
-            obj.push(Math.random() * 10)
+            obj.push(0)
             obj.push(area.name)
             areas.push(obj)
         }
