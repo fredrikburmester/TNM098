@@ -98,7 +98,7 @@ export default {
             let medical = parseFloat(report_data[4] || -1)
             let buildings = parseFloat(report_data[5] || -1)
             let shake_intensity = parseFloat(report_data[6] || -1)
-            let loc = report_data[7]
+            let loc = parseInt(report_data[7]) || -1;
 
             let report = {
                 sewer_and_water,

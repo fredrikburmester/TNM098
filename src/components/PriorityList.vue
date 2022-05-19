@@ -164,23 +164,26 @@ export default defineComponent({
             this.areasAndScore = [];
             for (let area of this.areas) {
                 let score = 0; let count = 0;
-                let relevantReports = this.reports[key].filter(r => r.loc == area.id);
+                let relevantReports = this.reports[key].filter(r => r.loc === area.id);
                 // Go through this relevantReport at location area.name and accumulate a score
                 Object.keys(this.categories).forEach(category => {
-                    // Is this category toggled?s
+                    // Is this category toggled?
                     if(this.selectedCategories[category]) {
-                        score += relevantReports[category];
-                        count++;
+                        relevantReports.forEach(report => {
+                            score += report[this.categories[category]];
+                            count++;
+                        });
                     }
                 });
+                console.log(score);
                 // Take the average
-                score = score / count;
+                if(count > 1) score = score / count;
                 
                 // Finally add to our areas and score array
                 let obj = []
                 obj.push(score);
-                obj.push(area.name)
-                this.areasAndScore.push(obj)
+                obj.push(area.name);
+                this.areasAndScore.push(obj);
             }
             this.myChart.setOption({...this.myChart.option, dataset: {
                 source: this.areasAndScore
