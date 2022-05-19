@@ -109,8 +109,8 @@ export default defineComponent({
             let i = 0
             let data = this.getDataPerLocation(this.selectedArea)
 
-            console.log(data)
-            console.log('Data for this location: ', data)
+            //console.log(data)
+            //console.log('Data for this location: ', data)
             let currentKeys = []
 
             let j = 0
@@ -140,7 +140,6 @@ export default defineComponent({
                 this.option.xAxis.data = currentKeys.slice(i - 10, i)
 
                 this.myChart.setOption(this.option)
-
                 i = i + 1
             }, (i + 1) * 100)
         },
