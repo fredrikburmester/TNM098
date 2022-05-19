@@ -52,12 +52,9 @@ export default defineComponent({
                 showDelay: 0,
                 transitionDuration: 0.2
             },
-            // aria: {
-            //     enabled: true,
-            //     decal: {
-            //     show: true
-            //     }
-            // },
+            aria: {
+                enabled: true,
+            },
             visualMap: {
                 left: 'right',
                 min: 0,
@@ -108,24 +105,34 @@ export default defineComponent({
         // Add values from this.reports to this.option.series[0].data
         updateChart(date) {
             // Extract data from current time
+
+            this.option.series[0].data.forEach( oldReport => {
+                oldReport.itemStyle = {decal:{symbol:'circles'}}
+            })
+
             this.reports[date].forEach( newReport => {
                 // Set necessary variables
                 let id = parseFloat(newReport.loc)
                 let location = this.getAreaName(id)
                 let value = this.getValue(newReport)
+                
                 // If value does not exist, skip to next entry
+
                 if(value === -1) return
                 
+
                 // If value for region does not exist, add it
                 if(this.option.series[0].data.findIndex(item => item.name === location) === -1) {
                     this.option.series[0].data.push({
                         name: location,
                         value: value,
-                        date: date
+                        date: date,
+                        itemStyle: {decal:{symbol:'none'}}
                     })
                 } else { // If value for region does exist, add new value to it and then split it
-                   this.option.series[0].data.find(item => item.name === location).value += value 
-                   this.option.series[0].data.find(item => item.name === location).value /= 2 
+                    this.option.series[0].data.find(item => item.name === location).itemStyle = {decal:{symbol:'none'}}
+                    this.option.series[0].data.find(item => item.name === location).value += value 
+                    this.option.series[0].data.find(item => item.name === location).value /= 2 
                 }
             })
             // Assign data to option
