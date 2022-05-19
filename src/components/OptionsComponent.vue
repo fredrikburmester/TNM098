@@ -2,10 +2,27 @@
     <div>
         <h1 class="text-xl text-white font-bold pb-4">Categories</h1>
         <div class="form-control">
-            <select v-model="localSelectedCategory" class="select text-black bg-slate-300 select-bordered w-full max-w-xs">
+            <!-- <select v-model="localSelectedCategory" class="select text-black bg-slate-300 select-bordered w-full max-w-xs">
                 <option disabled selected>Select Value</option>
                 <option v-for="(category, index) in categories" :key="index" :value="index">{{ getNiceCategoryName(index) }}</option>
-            </select>
+            </select> -->
+            <div v-for='category in Object.keys(this.categories)' :key="category">
+                <label class="label cursor-pointer">
+                    <span class="text-white">{{getNiceCategoryName(category)}}</span>
+                    <input 
+                        v-if="this.selectedCategories[category] === true" 
+                        @click="onToggle(category, false)" 
+                        type="checkbox" 
+                        class="toggle toggle-primary" checked 
+                    />
+                    <input 
+                        v-else 
+                        @click="onToggle(category, true)" 
+                        type="checkbox" 
+                        class="toggle toggle-primary" 
+                    />
+                </label>
+            </div>
         </div>
     </div>
 </template>
@@ -23,7 +40,7 @@ export default {
         }
     },
     computed: {
-        ...mapWritableState(useCategoriesStore, ['categories', 'selectedCategory', 'categoryNames']),
+        ...mapWritableState(useCategoriesStore, ['categories', 'selectedCategory', 'categoryNames', 'selectedCategories']),
     },
     watch: {
         localSelectedCategory(newValue) {
@@ -35,6 +52,10 @@ export default {
         getNiceCategoryName(category) {
             return this.categoryNames[category]
         },
+        onToggle(categoryKey, add) {
+            this.selectedCategories[categoryKey] = add; 
+            console.log(this.selectedCategories);
+        }
     },
 }
 </script>

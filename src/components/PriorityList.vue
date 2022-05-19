@@ -10,6 +10,7 @@ import { defineComponent } from 'vue'
 import * as echarts from 'echarts'
 import { mapWritableState } from 'pinia'
 import { useAreasStore } from '@/stores/areas'
+import { useCategoriesStore } from '../stores/categories'
 
 export default defineComponent({
     name: 'HelloWorld',
@@ -20,10 +21,15 @@ export default defineComponent({
         return {
             loading: false,
             flags: [],
+            keys: [],
+            myChart: null,
+            locationAndScore: [],
+            areasAndScore: []
         }
     },
     computed: {
-        ...mapWritableState(useAreasStore, ['areas']),
+        ...mapWritableState(useAreasStore, ['areas', 'reports']),
+        ...mapWritableState(useCategoriesStore, ['categories', 'numberOfCategories'])
     },
     async mounted() {
         await fetch('https://cdn.jsdelivr.net/npm/emoji-flags@1.3.0/data.json')
@@ -32,16 +38,19 @@ export default defineComponent({
                 this.flags = res
             })
         var chartDom = document.getElementById('main__priority_list')
-        var myChart = echarts.init(chartDom, 'dark')
+        this.myChart = echarts.init(chartDom, 'dark')
 
         let areas = []
-
         for (let area of this.areas) {
             let obj = []
-            obj.push(area.priority)
+            obj.push(Math.random() * 10)
             obj.push(area.name)
             areas.push(obj)
         }
+
+        this.keys = Object.keys(this.reports).sort((a, b) => {
+            return new Date(a) - new Date(b);
+        });
 
         const dimension = 0
 
@@ -53,10 +62,10 @@ export default defineComponent({
                 right: 80,
             },
             xAxis: {
-                max: 'dataMax',
+                max: 10,
                 axisLabel: {
                     formatter: function (n) {
-                        return Math.round(n) + ''
+                        return n
                     },
                 },
             },
@@ -90,7 +99,7 @@ export default defineComponent({
                     type: 'bar',
                     itemStyle: {
                         color: function (param) {
-                            return param.value[2]
+                            return param.value[1]
                         },
                     },
                     encode: {
@@ -127,7 +136,8 @@ export default defineComponent({
             //     ],
             // },
         }
-        myChart.setOption(option)
+        this.myChart.setOption(option)
+        this.updateChartTimer();
     },
     methods: {
         generateRandomHexColor() {
@@ -143,6 +153,39 @@ export default defineComponent({
                 }) || {}
             ).emoji
         },
+        updateChartTimer() {
+            let i = -1;
+            setInterval(() => {
+                i++;
+                this.updateChart(this.keys[i]);
+            }, 1000)
+        },
+        updateChart(key) {
+            this.areasAndScore = [];
+            for (let area of this.areas) {
+                let score = 0; let count = 0;
+                let relevantReports = this.reports[key].filter(r => r.loc == area.id);
+                // Go through this relevantReport at location area.name and accumulate a score
+                Object.keys(this.categories).forEach(category => {
+                    // Is this category toggled?s
+                    if(this.selectedCategories[category]) {
+                        score += relevantReports[category];
+                        count++;
+                    }
+                });
+                // Take the average
+                score = score / count;
+                
+                // Finally add to our areas and score array
+                let obj = []
+                obj.push(score);
+                obj.push(area.name)
+                this.areasAndScore.push(obj)
+            }
+            this.myChart.setOption({...this.myChart.option, dataset: {
+                source: this.areasAndScore
+            }});
+        }
     },
 })
 </script>
