@@ -10,6 +10,7 @@ import geoJson from '@/assets/geoJson.json'
 import * as echarts from 'echarts'
 import { useAreasStore } from '@/stores/areas'
 import { mapWritableState } from 'pinia'
+import { useCategoriesStore } from '../stores/categories'
 
 export default defineComponent({
     name: 'HelloWorld',
@@ -27,6 +28,7 @@ export default defineComponent({
     },
     computed: {
         ...mapWritableState(useAreasStore, ['areas', 'reports', 'perLineData', 'selectedArea', 'areaNames']),
+        ...mapWritableState(useCategoriesStore, ['categories', 'selectedCategories', 'categoryNames']),
     },
     mounted() {
         let chartDom = document.getElementById('main__map')
@@ -36,7 +38,6 @@ export default defineComponent({
         this.keys = Object.keys(this.reports).sort((a, b) => {
             return new Date(a) - new Date(b)
         })
-
 
         console.log(this.areas)
         console.log(this.reports)
@@ -51,6 +52,12 @@ export default defineComponent({
                 showDelay: 0,
                 transitionDuration: 0.2
             },
+            // aria: {
+            //     enabled: true,
+            //     decal: {
+            //     show: true
+            //     }
+            // },
             visualMap: {
                 left: 'right',
                 min: 0,
@@ -82,10 +89,8 @@ export default defineComponent({
                 data: []
             }],
         }
-        
         this.myChart.setOption(this.option)
-        this.updateChartTimer();
-        
+
         this.myChart.on('click', (params) => {
             let id = this.getAreaId(params.name)
             if (id) {
@@ -97,32 +102,33 @@ export default defineComponent({
             }
             //console.log(this.selectedArea)
         })
-        console.log(this.option)
+        this.updateChartTimer();
     },
     methods: {
         // Add values from this.reports to this.option.series[0].data
         updateChart(date) {
-            //replace current data with new data from next report
-            let currentData = []
-            
-            this.reports[date].map( report => {
-                
-                let id = parseFloat(report.loc)-1
+            // Extract data from current time
+            this.reports[date].forEach( newReport => {
+                // Set necessary variables
+                let id = parseFloat(newReport.loc)
                 let location = this.getAreaName(id)
-                let value = report.sewer_and_water
-
-                if(currentData.findIndex(item => item.name === location) === -1) {
-                    currentData.push({
+                let value = this.getValue(newReport)
+                // If value does not exist, skip to next entry
+                if(value === -1) return
+                
+                // If value for region does not exist, add it
+                if(this.option.series[0].data.findIndex(item => item.name === location) === -1) {
+                    this.option.series[0].data.push({
                         name: location,
-                        value: value
+                        value: value,
+                        date: date
                     })
-                } else {
-                    currentData.find(item => item.name === location).value += value
+                } else { // If value for region does exist, add new value to it and then split it
+                   this.option.series[0].data.find(item => item.name === location).value += value 
+                   this.option.series[0].data.find(item => item.name === location).value /= 2 
                 }
             })
-            console.log(this.perLineData)
-            console.log(currentData)
-            this.option.series[0].data = currentData
+            // Assign data to option
             this.myChart.setOption(this.option)
         },
 
@@ -141,7 +147,6 @@ export default defineComponent({
                 }
             }
         },
-
         //Update chart every second
         updateChartTimer() {
             let i = -1
@@ -151,6 +156,22 @@ export default defineComponent({
             }, 1000)
         },
 
+        // Get value for currently selected category
+        getValue(entry){
+
+
+            let value = 0
+            let count = 0
+            
+            for(let i = 0; i < 6; i++) {
+                if(this.selectedCategories[i]){
+                    count++
+                    value += entry[this.categories[i]]
+                }
+            }
+            if(count === 0) return -1
+            return value / count
+        }
     },
 })
 </script>
