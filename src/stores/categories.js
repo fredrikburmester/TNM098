@@ -11,6 +11,14 @@ export const useCategoriesStore = defineStore({
             4: 'buildings',
             5: 'shake_intensity',
         },
+        categoriesEnum: {
+            sewer_and_water: 0,
+            power: 1,
+            roads_and_bridges: 2,
+            medical: 3,
+            buildings: 4,
+            shake_intensity: 5,
+        },
         categoryNames: {
             0: 'Sewer and Water',
             1: 'Power',
