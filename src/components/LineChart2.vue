@@ -4,6 +4,7 @@ import { defineComponent } from 'vue'
 import { useCategoriesStore } from '@/stores/categories'
 import * as echarts from 'echarts'
 import { useAreasStore } from '@/stores/areas'
+
 import { mapWritableState } from 'pinia'
 
 export default defineComponent({
@@ -15,69 +16,75 @@ export default defineComponent({
             opacity: 0.2,
             keys: [],
             myChart: null,
+            legendData: [],
         }
     },
     computed: {
         ...mapWritableState(useAreasStore, ['areas', 'reports', 'perLineData', 'selectedArea', 'areaNames']),
-        ...mapWritableState(useCategoriesStore, ['categories', 'selectedCategory', 'categoryNames']),
+        ...mapWritableState(useCategoriesStore, ['categories', 'selectedCategory', 'categoryNames', 'categoriesEnum']),
     },
     mounted() {
-        let chartDom = document.getElementById('main__linechart')
+        let chartDom = document.getElementById('main__linechart2')
         this.myChart = echarts.init(chartDom)
 
         this.keys = Object.keys(this.reports).sort((a, b) => {
             return new Date(a) - new Date(b)
         })
 
+        this.legendData = Object.values(this.categoryNames)
+
         this.option = {
-            title: {
-                text: 'Temperature Change in the Coming Week',
-            },
             tooltip: {
                 trigger: 'axis',
-            },
-            legend: {},
-            toolbox: {
-                show: true,
-                feature: {
-                    dataZoom: {
-                        yAxisIndex: 'none',
+                axisPointer: {
+                    type: 'line',
+                    lineStyle: {
+                        color: 'rgba(0,0,0,0.2)',
+                        width: 1,
+                        type: 'solid',
                     },
-                    dataView: { readOnly: false },
-                    magicType: { type: ['line', 'bar'] },
-                    restore: {},
-                    saveAsImage: {},
                 },
             },
-            xAxis: {
-                type: 'category',
-                boundaryGap: false,
-                data: [],
+            legend: {
+                data: this.legendData,
             },
-            yAxis: {
-                type: 'value',
-                min: 0,
-                max: 10,
+            singleAxis: {
+                top: 50,
+                bottom: 50,
+                axisTick: {},
+                axisLabel: {},
+                type: 'time',
+                axisPointer: {
+                    animation: true,
+                    label: {
+                        show: true,
+                    },
+                },
+                splitLine: {
+                    show: true,
+                    lineStyle: {
+                        type: 'dashed',
+                        opacity: 0.2,
+                    },
+                },
             },
             series: [
                 {
-                    name: 'Highest',
-                    type: 'line',
-                    data: [],
-                    // markPoint: {
-                    //     data: [
-                    //         { type: 'max', name: 'Max' },
-                    //         { type: 'min', name: 'Min' },
-                    //     ],
-                    // },
-                    // markLine: {
-                    //     data: [{ type: 'average', name: 'Avg' }],
-                    // },
+                    type: 'themeRiver',
+                    emphasis: {
+                        itemStyle: {
+                            shadowBlur: 20,
+                            shadowColor: 'rgba(0, 0, 0, 0.8)',
+                        },
+                    },
+                    data: [['2015/11/08', 10, 'DQ']],
                 },
             ],
         }
 
         this.myChart.setOption(this.option)
+
+        console.log(this.getDataPerCategory(this.categoriesEnum.sewer_and_water))
 
         this.run()
     },
@@ -106,26 +113,32 @@ export default defineComponent({
             return result
         },
         run() {
-            let i = 0
-            let data = this.getDataPerLocation(this.selectedArea)
+            const sewer_and_water_Data = this.getDataPerCategory(0)
+            const power_Data = this.getDataPerCategory(1)
+            const roads_and_bridges_Data = this.getDataPerCategory(2)
+            const medical_Data = this.getDataPerCategory(3)
+            const buildings_Data = this.getDataPerCategory(4)
+            const shake_intensity_Data = this.getDataPerCategory(5)
 
-            console.log(data)
-            console.log('Data for this location: ', data)
-            let currentKeys = []
+            let dataSets = [sewer_and_water_Data, power_Data, roads_and_bridges_Data, medical_Data, buildings_Data, shake_intensity_Data]
 
-            let j = 0
+            console.log(dataSets)
+
             let currentData = []
 
-            let k = 0
-
+            let i = 0
+            let j = 0
             setInterval(() => {
-                currentKeys.push(this.keys[i])
-                if (data[j].datetime == this.keys[i]) {
-                    currentData.push(data[j])
-                    j++
-                } else {
-                    currentData.push(null)
+                for (let dataSet of dataSets) {
+                    if (dataSet[j].datetime == this.keys[i]) {
+                        currentData.push(dataSet[j])
+                        j++
+                    } else {
+                        // currentData.push(null)
+                    }
                 }
+
+                console.log(currentData)
 
                 this.option.series[0].data = currentData
                     .map((report) => {
@@ -137,12 +150,16 @@ export default defineComponent({
                     })
                     .slice(i - 10, i)
 
-                this.option.xAxis.data = currentKeys.slice(i - 10, i)
-
                 this.myChart.setOption(this.option)
 
-                i = i + 1
-            }, (i + 1) * 100)
+                i++
+            }, 1000)
+        },
+        getDataPerCategory(category) {
+            let data = this.perLineData.map((report) => {
+                return [report.datetime, parseFloat(report[this.categories[category]]), this.categoryNames[category]]
+            })
+            return data
         },
     },
 })
@@ -150,7 +167,7 @@ export default defineComponent({
 
 <template>
     <div>
-        <div id="main__linechart"></div>
+        <div id="main__linechart2"></div>
     </div>
 </template>
 
@@ -160,7 +177,7 @@ export default defineComponent({
     height: 400px;
     background-color: white;
 }
-#main__linechart {
+#main__linechart2 {
     height: 500px;
     width: 100%;
 }
