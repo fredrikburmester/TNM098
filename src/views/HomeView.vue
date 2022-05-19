@@ -13,23 +13,22 @@
         </div>
         <div class="">
             <!-- <HeatMap /> -->
-            <LineChart />
+            <CandleChart />
         </div>
     </div>
 </template>
 
 <script>
 import { mapWritableState } from 'pinia'
-import HeatMap from '../components/HeatMap.vue'
 import MapComponent from '../components/MapComponent.vue'
 import OptionsComponent from '../components/OptionsComponent.vue'
 import PriorityList from '../components/PriorityList.vue'
 import geoJson from '@/assets/geoJson.json'
 import { useAreasStore } from '@/stores/areas'
-import LineChart from '../components/LineChart.vue'
+import CandleChart from '../components/CandleChart.vue'
 
 export default {
-    components: { HeatMap, MapComponent, OptionsComponent, PriorityList, LineChart },
+    components: { MapComponent, OptionsComponent, PriorityList, CandleChart },
     props: {},
     data() {
         return {
