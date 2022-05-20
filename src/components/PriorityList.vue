@@ -13,7 +13,7 @@ import { useAreasStore } from '@/stores/areas'
 import { useCategoriesStore } from '../stores/categories'
 
 export default defineComponent({
-    name: 'HelloWorld',
+    name: 'PriorityList',
     provide: {
         [THEME_KEY]: 'dark',
     },
@@ -31,12 +31,7 @@ export default defineComponent({
         ...mapWritableState(useAreasStore, ['areas', 'reports']),
         ...mapWritableState(useCategoriesStore, ['categories', 'numberOfCategories', 'selectedCategories'])
     },
-    async mounted() {
-        await fetch('https://cdn.jsdelivr.net/npm/emoji-flags@1.3.0/data.json')
-            .then((res) => res.json())
-            .then((res) => {
-                this.flags = res
-            })
+    mounted() {
         var chartDom = document.getElementById('main__priority_list')
         this.myChart = echarts.init(chartDom, 'dark')
 
@@ -175,7 +170,6 @@ export default defineComponent({
                         });
                     }
                 });
-                console.log(score);
                 // Take the average
                 if(count > 1) score = score / count;
                 

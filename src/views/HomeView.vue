@@ -10,10 +10,10 @@
             <div>
                 <PriorityList />
             </div>
-        </div>
-        <div class="">
-            <!-- <HeatMap /> -->
-            <CandleChart />
+            <div>
+                <HeatMap />
+                <!-- <CandleChart /> -->
+            </div>
         </div>
     </div>
 </template>
@@ -26,9 +26,10 @@ import PriorityList from '../components/PriorityList.vue'
 import geoJson from '@/assets/geoJson.json'
 import { useAreasStore } from '@/stores/areas'
 import CandleChart from '../components/CandleChart.vue'
+import HeatMap from '../components/HeatMap.vue'
 
 export default {
-    components: { MapComponent, OptionsComponent, PriorityList, CandleChart },
+    components: { MapComponent, OptionsComponent, PriorityList, CandleChart, HeatMap },
     props: {},
     data() {
         return {
