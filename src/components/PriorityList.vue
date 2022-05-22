@@ -24,12 +24,12 @@ export default defineComponent({
             keys: [],
             myChart: null,
             locationAndScore: [],
-            areasAndScore: []
+            areasAndScore: [],
         }
     },
     computed: {
         ...mapWritableState(useAreasStore, ['areas', 'reports']),
-        ...mapWritableState(useCategoriesStore, ['categories', 'numberOfCategories', 'selectedCategories'])
+        ...mapWritableState(useCategoriesStore, ['categories', 'numberOfCategories', 'selectedCategories', 'updateFreq']),
     },
     mounted() {
         var chartDom = document.getElementById('main__priority_list')
@@ -43,9 +43,11 @@ export default defineComponent({
             areas.push(obj)
         }
 
+        console.log('Areas', areas)
+
         this.keys = Object.keys(this.reports).sort((a, b) => {
-            return new Date(a) - new Date(b);
-        });
+            return new Date(a) - new Date(b)
+        })
 
         const dimension = 0
 
@@ -132,7 +134,7 @@ export default defineComponent({
             // },
         }
         this.myChart.setOption(option)
-        this.updateChartTimer();
+        this.updateChartTimer()
     },
     methods: {
         generateRandomHexColor() {
@@ -149,40 +151,44 @@ export default defineComponent({
             ).emoji
         },
         updateChartTimer() {
-            let i = -1;
+            let i = -1
             setInterval(() => {
-                i++;
-                this.updateChart(this.keys[i]);
-            }, 1000)
+                i++
+                this.updateChart(this.keys[i])
+            }, this.updateFreq)
         },
         updateChart(key) {
-            this.areasAndScore = [];
+            this.areasAndScore = []
             for (let area of this.areas) {
-                let score = 0; let count = 0;
-                let relevantReports = this.reports[key].filter(r => r.loc === area.id);
+                let score = 0
+                let count = 0
+                let relevantReports = this.reports[key].filter((r) => r.loc === area.id)
                 // Go through this relevantReport at location area.name and accumulate a score
-                Object.keys(this.categories).forEach(category => {
+                Object.keys(this.categories).forEach((category) => {
                     // Is this category toggled?
-                    if(this.selectedCategories[category]) {
-                        relevantReports.forEach(report => {
-                            score += report[this.categories[category]];
-                            count++;
-                        });
+                    if (this.selectedCategories[category]) {
+                        relevantReports.forEach((report) => {
+                            score += report[this.categories[category]]
+                            count++
+                        })
                     }
-                });
+                })
                 // Take the average
-                if(count > 1) score = score / count;
-                
+                if (count > 1) score = score / count
+
                 // Finally add to our areas and score array
                 let obj = []
-                obj.push(score);
-                obj.push(area.name);
-                this.areasAndScore.push(obj);
+                obj.push(score)
+                obj.push(area.name)
+                this.areasAndScore.push(obj)
             }
-            this.myChart.setOption({...this.myChart.option, dataset: {
-                source: this.areasAndScore
-            }});
-        }
+            this.myChart.setOption({
+                ...this.myChart.option,
+                dataset: {
+                    source: this.areasAndScore,
+                },
+            })
+        },
     },
 })
 </script>
