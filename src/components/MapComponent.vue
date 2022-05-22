@@ -28,7 +28,7 @@ export default defineComponent({
     },
     computed: {
         ...mapWritableState(useAreasStore, ['areas', 'reports', 'perLineData', 'selectedArea', 'areaNames']),
-        ...mapWritableState(useCategoriesStore, ['categories', 'selectedCategories', 'categoryNames']),
+        ...mapWritableState(useCategoriesStore, ['categories', 'selectedCategories', 'categoryNames', 'updateFreq']),
     },
     mounted() {
         let chartDom = document.getElementById('main__map')
@@ -50,7 +50,7 @@ export default defineComponent({
             tooltip: {
                 trigger: 'item',
                 showDelay: 0,
-                transitionDuration: 0.2
+                transitionDuration: 0.2,
             },
             aria: {
                 enabled: true,
@@ -60,31 +60,21 @@ export default defineComponent({
                 min: 0,
                 max: 10,
                 inRange: {
-                    color: [
-                    '#313695',
-                    '#4575b4',
-                    '#74add1',
-                    '#abd9e9',
-                    '#e0f3f8',
-                    '#ffffbf',
-                    '#fee090',
-                    '#fdae61',
-                    '#f46d43',
-                    '#d73027',
-                    '#a50026'
-                    ]
+                    color: ['#313695', '#4575b4', '#74add1', '#abd9e9', '#e0f3f8', '#ffffbf', '#fee090', '#fdae61', '#f46d43', '#d73027', '#a50026'],
                 },
                 text: ['High', 'Low'],
-                calculable: true
+                calculable: true,
             },
-            series: [{
-                name: 'USA PopEstimates',
-                type: 'map',
-                roam: true,
-                map: 'USA',
-                emphasis: {label: {show: true}},
-                data: []
-            }],
+            series: [
+                {
+                    name: 'USA PopEstimates',
+                    type: 'map',
+                    roam: true,
+                    map: 'USA',
+                    emphasis: { label: { show: true } },
+                    data: [],
+                },
+            ],
         }
         this.myChart.setOption(this.option)
 
@@ -99,40 +89,40 @@ export default defineComponent({
             }
             //console.log(this.selectedArea)
         })
-        this.updateChartTimer();
+        this.updateChartTimer()
     },
     methods: {
         // Add values from this.reports to this.option.series[0].data
         updateChart(date) {
             // Extract data from current time
 
-            this.option.series[0].data.forEach( oldReport => {
-                oldReport.itemStyle = {decal:{symbol:'circles'}}
+            this.option.series[0].data.forEach((oldReport) => {
+                oldReport.itemStyle = { decal: { symbol: 'circles' } }
             })
 
-            this.reports[date].forEach( newReport => {
+            this.reports[date].forEach((newReport) => {
                 // Set necessary variables
                 let id = parseFloat(newReport.loc)
                 let location = this.getAreaName(id)
                 let value = this.getValue(newReport)
-                
+
                 // If value does not exist, skip to next entry
 
-                if(value === -1) return
-                
+                if (value === -1) return
 
                 // If value for region does not exist, add it
-                if(this.option.series[0].data.findIndex(item => item.name === location) === -1) {
+                if (this.option.series[0].data.findIndex((item) => item.name === location) === -1) {
                     this.option.series[0].data.push({
                         name: location,
                         value: value,
                         date: date,
-                        itemStyle: {decal:{symbol:'none'}}
+                        itemStyle: { decal: { symbol: 'none' } },
                     })
-                } else { // If value for region does exist, add new value to it and then split it
-                    this.option.series[0].data.find(item => item.name === location).itemStyle = {decal:{symbol:'none'}}
-                    this.option.series[0].data.find(item => item.name === location).value += value 
-                    this.option.series[0].data.find(item => item.name === location).value /= 2 
+                } else {
+                    // If value for region does exist, add new value to it and then split it
+                    this.option.series[0].data.find((item) => item.name === location).itemStyle = { decal: { symbol: 'none' } }
+                    this.option.series[0].data.find((item) => item.name === location).value += value
+                    this.option.series[0].data.find((item) => item.name === location).value /= 2
                 }
             })
             // Assign data to option
@@ -160,25 +150,23 @@ export default defineComponent({
             setInterval(() => {
                 i++
                 this.updateChart(this.keys[i])
-            }, 1000)
+            }, this.updateFreq)
         },
 
         // Get value for currently selected category
-        getValue(entry){
-
-
+        getValue(entry) {
             let value = 0
             let count = 0
-            
-            for(let i = 0; i < 6; i++) {
-                if(this.selectedCategories[i]){
+
+            for (let i = 0; i < 6; i++) {
+                if (this.selectedCategories[i]) {
                     count++
                     value += entry[this.categories[i]]
                 }
             }
-            if(count === 0) return -1
+            if (count === 0) return -1
             return value / count
-        }
+        },
     },
 })
 </script>
