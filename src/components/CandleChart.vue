@@ -17,17 +17,30 @@ export default defineComponent({
             keys: [],
             myChart: null,
             legendData: [],
+            data: [],
         }
     },
     computed: {
         ...mapWritableState(useAreasStore, ['areas', 'reports', 'perLineData', 'selectedArea', 'areaNames']),
-        ...mapWritableState(useCategoriesStore, ['categories', 'selectedCategory', 'categoryNames', 'categoriesEnum']),
+        ...mapWritableState(useCategoriesStore, ['categories', 'selectedCategory', 'categoryNames', 'categoriesEnum', 'selectedCategories']),
     },
     mounted() {
         let chartDom = document.getElementById('main__linechart2')
         this.myChart = echarts.init(chartDom)
-
+        this.data = this.getDataPerLocation(this.selectedArea)
         this.option = {
+            scales: {
+                yAxes: [
+                    {
+                        display: true,
+                        stacked: true,
+                        ticks: {
+                            min: 0, // minimum value
+                            max: 10, // maximum value
+                        },
+                    },
+                ],
+            },
             xAxis: {
                 data: [],
             },
@@ -35,14 +48,14 @@ export default defineComponent({
             series: [
                 {
                     type: 'candlestick',
-                    data: [[20], [40], [31], [3]],
+                    data: [],
                 },
             ],
         }
 
         this.myChart.setOption(this.option)
 
-        this.run()
+        this.run2()
     },
     methods: {
         getDataPerLocation(location) {
@@ -68,9 +81,18 @@ export default defineComponent({
             }
             return result
         },
+        getAllReportsPerLocation(location) {
+            let result = []
+
+            for (let i = 0; i < this.perLineData.length; i++) {
+                if (this.perLineData[i].location == location) {
+                    result.push(this.perLineData[i])
+                }
+            }
+            return result
+        },
         run() {
-            const data = this.getDataPerLocation(this.selectedArea)
-            console.log('data', data)
+            const data = this.data
             const dates = Object.keys(this.reports).sort((a, b) => {
                 return new Date(a) - new Date(b)
             })
@@ -85,28 +107,94 @@ export default defineComponent({
                 currentDates.push(currentDateTime)
 
                 if (data[j].datetime == currentDateTime) {
-                    const datapoint = data[j][this.categories[this.selectedCategory]]
-                    console.log('datapoint', datapoint)
-                    currentData.push(parseFloat(datapoint))
+                    const datapoint = parseFloat(data[j][this.categories[this.selectedCategory]])
+                    currentData.push([datapoint, datapoint, datapoint, datapoint])
                     j++
                 } else {
                     currentData.push([])
                 }
 
-                console.log(currentData, currentDates)
+                this.option.series[0].data = currentData.slice(i - 20, i)
 
-                this.option.series[0].data = currentData
-                    .map((report) => {
-                        if (report == null) {
-                            return null
-                        } else {
-                            return parseFloat(report.sewer_and_water)
-                        }
-                    })
-                    .slice(i - 10, i)
+                if (i < 20) {
+                    this.option.xAxis.data = currentDates.slice(0, i)
+                } else {
+                    this.option.xAxis.data = currentDates.slice(i - 20, i)
+                }
 
                 this.myChart.setOption(this.option)
 
+                i++
+            }, 1000)
+        },
+        run2() {
+            const dates = Object.keys(this.reports).sort((a, b) => {
+                return new Date(a) - new Date(b)
+            })
+
+            let currentData = []
+            let currentDates = []
+
+            console.log('Selected Location', this.selectedArea)
+            console.log('Selected Category', this.selectedCategory)
+
+            let i = 0
+            setInterval(() => {
+                const currentDateTime = dates[i]
+                currentDates.push(currentDateTime)
+
+                const currentReports = this.reports[currentDateTime]
+
+                let lowValue = null
+                let highValue = null
+                for (let i = 0; i < currentReports.length; i++) {
+                    const r = currentReports[i]
+
+                    if (r.loc != this.selectedArea) {
+                        continue
+                    }
+
+                    let value = parseInt(r[this.categories[this.selectedCategory]])
+
+                    if (value > 0) {
+                        if (i == 0) {
+                            lowValue = value
+                            highValue = value
+                        } else {
+                            if (value < lowValue) {
+                                lowValue = value
+                            }
+                            if (value > highValue) {
+                                highValue = value
+                            }
+                        }
+                    }
+                }
+
+                if (lowValue != null && highValue != null) {
+                    if (lowValue != highValue) {
+                        let medianValue = (highValue + lowValue) / 2
+
+                        if (medianValue >= 1 && medianValue <= 9) {
+                            currentData.push([medianValue - 0.5, medianValue + 0.5, lowValue, highValue])
+                        } else {
+                            currentData.push([lowValue - 0.5, highValue + 0.5, lowValue - 0.5, highValue + 0.5])
+                        }
+                    } else {
+                        currentData.push([lowValue - 0.5, highValue + 0.5, lowValue - 0.5, highValue + 0.5])
+                    }
+                } else {
+                    currentData.push([])
+                }
+
+                this.option.series[0].data = currentData.slice(i - 20, i)
+                if (i < 20) {
+                    this.option.xAxis.data = currentDates.slice(0, i)
+                } else {
+                    this.option.xAxis.data = currentDates.slice(i - 20, i)
+                }
+
+                this.myChart.setOption(this.option)
                 i++
             }, 1000)
         },
