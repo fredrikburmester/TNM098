@@ -168,8 +168,10 @@ export default defineComponent({
                     // Is this category toggled?
                     if (this.selectedCategories[category]) {
                         relevantReports.forEach((report) => {
-                            score += report[this.categories[category]]
-                            count++
+                            if(report[this.categories[category]] != -1){
+                                score += report[this.categories[category]]
+                                count++
+                            }
                         })
                     }
                 })
