@@ -3,10 +3,12 @@
         <h1 class="text-white text-3xl text-bold">{{ getAreaName(areasStore.selectedArea) }}</h1>
         <p class="text-white">{{ formatDateTime(categoriesStore.currentDataPoint) }}</p>
         <button class="btn btn-sm text-white my-4" :style="categoriesStore.isPaused ? 'background-color: red' : 'background-color: green'" @click="pause">
-            Pause
+            {{ categoriesStore.isPaused ? 'Play' : 'Pause' }}
         </button>
-        <p class="text-white">Speed: {{ categoriesStore.updateFrequency }}s</p>
-        <input id="updatefreq" v-model="categoriesStore.updateFrequency" type="range" name="updatefreq" min="1" max="10" />
+        <div>
+            <p class="text-white">Time between reports: {{ categoriesStore.updateFrequency }}s</p>
+            <input id="updatefreq" v-model="categoriesStore.updateFrequency" class="" type="range" name="updatefreq" min="1" max="10" />
+        </div>
     </div>
 </template>
 
@@ -31,7 +33,7 @@ const formatDateTime = (datetime) => {
 </script>
 
 <style scoped>
-#header {
-    height: 100px;
-}
+/* #header {
+    height: 00px;
+} */
 </style>
