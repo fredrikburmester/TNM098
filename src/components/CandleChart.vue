@@ -135,9 +135,6 @@ export default defineComponent({
             let currentData = []
             let currentDates = []
 
-            console.log('Selected Location', this.selectedArea)
-            console.log('Selected Category', this.selectedCategory)
-
             let i = 0
             setInterval(() => {
                 const currentDateTime = dates[i]

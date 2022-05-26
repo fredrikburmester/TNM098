@@ -3,8 +3,8 @@
         <div class="">
             <HeaderComponent />
         </div>
-        <div class="grid grid-cols-3 gap-4">
-            <div>
+        <div class="grid2 gap-4">
+            <div id="options">
                 <OptionsComponent />
             </div>
             <div>
@@ -140,7 +140,16 @@ export default {
 </script>
 
 <style scoped>
-.grid {
-    grid-template-rows: 200px 500px 500px;
+.grid1 {
+    display: grid;
+    grid-template-rows: 300px 500px 500px;
+}
+.grid2 {
+    display: grid;
+    grid-template-columns: 300px 1fr 500px;
+    column-gap: 10vw;
+}
+#options {
+    width: 300px;
 }
 </style>
