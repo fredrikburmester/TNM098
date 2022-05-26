@@ -28,7 +28,7 @@ export default defineComponent({
     },
     computed: {
         ...mapWritableState(useAreasStore, ['areas', 'reports', 'perLineData', 'selectedArea', 'areaNames']),
-        ...mapWritableState(useCategoriesStore, ['categories', 'selectedCategories', 'categoryNames', 'updateFreq']),
+        ...mapWritableState(useCategoriesStore, ['categories', 'selectedCategories', 'categoryNames', 'updateFreq', 'isPaused']),
     },
     mounted() {
         let chartDom = document.getElementById('main__map')
@@ -153,10 +153,12 @@ export default defineComponent({
         //Update chart every second
         updateChartTimer() {
             let i = -1
-            setInterval(() => {
-                i++
-                this.updateChart(this.keys[i])
-            }, this.updateFreq)
+                setInterval(() => {
+                if(!this.isPaused){
+                    i++
+                    this.updateChart(this.keys[i])
+                }
+                }, this.updateFreq)
         },
 
         // Get value for currently selected category

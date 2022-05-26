@@ -29,7 +29,7 @@ export default defineComponent({
     },
     computed: {
         ...mapWritableState(useAreasStore, ['areas', 'reports']),
-        ...mapWritableState(useCategoriesStore, ['categories', 'numberOfCategories', 'selectedCategories', 'updateFreq']),
+        ...mapWritableState(useCategoriesStore, ['categories', 'numberOfCategories', 'selectedCategories', 'updateFreq', 'isPaused']),
     },
     mounted() {
         var chartDom = document.getElementById('main__priority_list')
@@ -153,8 +153,10 @@ export default defineComponent({
         updateChartTimer() {
             let i = -1
             setInterval(() => {
-                i++
-                this.updateChart(this.keys[i])
+                if(!this.isPaused){
+                    i++
+                    this.updateChart(this.keys[i])
+                }
             }, this.updateFreq)
         },
         updateChart(key) {
