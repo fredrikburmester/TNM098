@@ -1,5 +1,8 @@
 <template>
-    <div v-if="!loading" class="grid grid-rows-2 p-4" style="background-color: #100c2a">
+    <div v-if="!loading" class="grid p-4" style="background-color: #100c2a">
+        <div class="">
+            <HeaderComponent />
+        </div>
         <div class="grid grid-cols-3 gap-4">
             <div>
                 <OptionsComponent />
@@ -13,7 +16,6 @@
         </div>
         <div>
             <HeatMap />
-            <!-- <CandleChart /> -->
         </div>
     </div>
 </template>
@@ -27,9 +29,10 @@ import geoJson from '@/assets/geoJson.json'
 import { useAreasStore } from '@/stores/areas'
 import CandleChart from '../components/CandleChart.vue'
 import HeatMap from '../components/HeatMap.vue'
+import HeaderComponent from '../components/HeaderComponent.vue'
 
 export default {
-    components: { MapComponent, OptionsComponent, PriorityList, CandleChart, HeatMap },
+    components: { MapComponent, OptionsComponent, PriorityList, CandleChart, HeatMap, HeaderComponent },
     props: {},
     data() {
         return {
@@ -136,4 +139,8 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.grid {
+    grid-template-rows: 200px 500px 500px;
+}
+</style>
