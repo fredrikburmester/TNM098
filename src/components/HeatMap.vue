@@ -173,15 +173,17 @@ export default defineComponent({
             myChart1.setOption(option1)
 
             setInterval(() => {
-                categoriesStore.currentDataPoint = keys[i]
-                if (i < numberOfDataPointsToShow) {
-                    option1.xAxis.data = keys.slice(0, i)
-                } else {
-                    option1.xAxis.data = keys.slice(i - numberOfDataPointsToShow, i)
+                if (categoriesStore.isPaused) {
+                    categoriesStore.currentDataPoint = keys[i]
+                    if (i < numberOfDataPointsToShow) {
+                        option1.xAxis.data = keys.slice(0, i)
+                    } else {
+                        option1.xAxis.data = keys.slice(i - numberOfDataPointsToShow, i)
+                    }
+                    myChart1.setOption(option1)
+                    i++
+                    console.log(localUpdateFrequency)
                 }
-                myChart1.setOption(option1)
-                i++
-                console.log(localUpdateFrequency)
             }, localUpdateFrequency)
         })
 
