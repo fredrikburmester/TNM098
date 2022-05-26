@@ -2,7 +2,11 @@
     <div id="header" class="">
         <h1 class="text-white text-3xl text-bold">{{ getAreaName(areasStore.selectedArea) }}</h1>
         <p class="text-white">{{ formatDateTime(categoriesStore.currentDataPoint) }}</p>
-        <button class="btn btn-sm btn-error my-4" @click="pause">Pause</button>
+        <button class="btn btn-sm text-white my-4" :style="categoriesStore.isPaused ? 'background-color: red' : 'background-color: green'" @click="pause">
+            Pause
+        </button>
+        <p class="text-white">Speed: {{ categoriesStore.updateFrequency }}s</p>
+        <input id="updatefreq" v-model="categoriesStore.updateFrequency" type="range" name="updatefreq" min="1" max="10" />
     </div>
 </template>
 
@@ -14,11 +18,9 @@ const areasStore = useAreasStore()
 const categoriesStore = useCategoriesStore()
 
 const pause = () => {
-    console.log('pause')
     categoriesStore.isPaused = !categoriesStore.isPaused
 }
 const getAreaName = (id) => {
-    console.log(areasStore.areas)
     return areasStore.areas.find((area) => area.id === id).name
 }
 

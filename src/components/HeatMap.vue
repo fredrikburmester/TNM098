@@ -165,15 +165,13 @@ export default defineComponent({
 
         onMounted(() => {
             let chartDom1 = document.getElementById('main__heatmap_1')
-
             option1 = getOptionsPerArea(areasStore.selectedArea)
-
             myChart1 = echarts.init(chartDom1, 'dark')
-
             myChart1.setOption(option1)
 
+            let j = 0
             setInterval(() => {
-                if (!categoriesStore.isPaused) {
+                if (!categoriesStore.isPaused && !(j % categoriesStore.updateFrequency)) {
                     categoriesStore.currentDataPoint = keys[i]
                     if (i < numberOfDataPointsToShow) {
                         option1.xAxis.data = keys.slice(0, i)
@@ -182,9 +180,9 @@ export default defineComponent({
                     }
                     myChart1.setOption(option1)
                     i++
-                    console.log(localUpdateFrequency)
                 }
-            }, localUpdateFrequency)
+                j++
+            }, 1000)
         })
 
         const getAreaName = (area) => {
