@@ -28,7 +28,7 @@ export default defineComponent({
     },
     computed: {
         ...mapWritableState(useAreasStore, ['areas', 'reports', 'perLineData', 'selectedArea', 'areaNames']),
-        ...mapWritableState(useCategoriesStore, ['categories', 'selectedCategories', 'categoryNames', 'updateFreq', 'isPaused']),
+        ...mapWritableState(useCategoriesStore, ['categories', 'selectedCategories', 'categoryNames', 'updateFrequency', 'isPaused']),
     },
     mounted() {
         let chartDom = document.getElementById('main__map')
@@ -51,9 +51,9 @@ export default defineComponent({
                 trigger: 'item',
                 showDelay: 0,
                 transitionDuration: 0.2,
-                formatter: function(params) {
-                    return  params.name + ': ' + params.value.toFixed(1)
-                }
+                formatter: function (params) {
+                    return params.name + ': ' + params.value.toFixed(1)
+                },
             },
             aria: {
                 enabled: true,
@@ -63,7 +63,7 @@ export default defineComponent({
                 min: 0,
                 max: 10,
                 inRange: {
-                    color: [ '#ffffbf', '#fee090', '#fdae61', '#f46d43', '#d73027', '#a50026'],
+                    color: ['#ffffbf', '#fee090', '#fdae61', '#f46d43', '#d73027', '#a50026'],
                 },
                 text: ['High', 'Low'],
                 calculable: true,
@@ -74,9 +74,10 @@ export default defineComponent({
                     type: 'map',
                     roam: false,
                     map: 'USA',
-                    emphasis: { label: { 
-                        show: true,
-                        } 
+                    emphasis: {
+                        label: {
+                            show: true,
+                        },
                     },
                     data: [],
                 },
@@ -99,10 +100,9 @@ export default defineComponent({
     methods: {
         // Add values from this.reports to this.option.series[0].data
         updateChart(date) {
-
             // Extract data from current time
             this.option.series[0].data.forEach((oldReport) => {
-                oldReport.itemStyle = { decal: { symbol: 'none' }}
+                oldReport.itemStyle = { decal: { symbol: 'none' } }
             })
 
             let newReports = []
@@ -153,12 +153,14 @@ export default defineComponent({
         //Update chart every second
         updateChartTimer() {
             let i = -1
-                setInterval(() => {
-                if(!this.isPaused){
+            let j = 0
+            setInterval(() => {
+                if (!this.isPaused && !(j % this.updateFrequency)) {
                     i++
                     this.updateChart(this.keys[i])
                 }
-                }, this.updateFreq)
+                j++
+            }, 1000)
         },
 
         // Get value for currently selected category

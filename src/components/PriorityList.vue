@@ -29,7 +29,7 @@ export default defineComponent({
     },
     computed: {
         ...mapWritableState(useAreasStore, ['areas', 'reports']),
-        ...mapWritableState(useCategoriesStore, ['categories', 'numberOfCategories', 'selectedCategories', 'updateFreq', 'isPaused']),
+        ...mapWritableState(useCategoriesStore, ['categories', 'numberOfCategories', 'selectedCategories', 'updateFrequency', 'isPaused']),
     },
     mounted() {
         var chartDom = document.getElementById('main__priority_list')
@@ -152,12 +152,14 @@ export default defineComponent({
         },
         updateChartTimer() {
             let i = -1
+            let j = 0
             setInterval(() => {
-                if(!this.isPaused){
+                if (!this.isPaused && !(j % this.updateFrequency)) {
                     i++
                     this.updateChart(this.keys[i])
                 }
-            }, this.updateFreq)
+                j++
+            }, 1000)
         },
         updateChart(key) {
             this.areasAndScore = []
@@ -170,7 +172,7 @@ export default defineComponent({
                     // Is this category toggled?
                     if (this.selectedCategories[category]) {
                         relevantReports.forEach((report) => {
-                            if(report[this.categories[category]] != -1){
+                            if (report[this.categories[category]] != -1) {
                                 score += report[this.categories[category]]
                                 count++
                             }

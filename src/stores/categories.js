@@ -4,7 +4,7 @@ export const useCategoriesStore = defineStore({
     id: 'categories',
     state: () => ({
         isPaused: false,
-        updateFrequency: 1,
+        updateFrequency: 2,
         currentDataPoint: null,
         numberOfCategories: 6,
         categories: {
