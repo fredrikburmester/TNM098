@@ -173,7 +173,7 @@ export default defineComponent({
             myChart1.setOption(option1)
 
             setInterval(() => {
-                if (categoriesStore.isPaused) {
+                if (!categoriesStore.isPaused) {
                     categoriesStore.currentDataPoint = keys[i]
                     if (i < numberOfDataPointsToShow) {
                         option1.xAxis.data = keys.slice(0, i)
