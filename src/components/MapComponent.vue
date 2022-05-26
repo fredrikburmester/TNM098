@@ -51,6 +51,9 @@ export default defineComponent({
                 trigger: 'item',
                 showDelay: 0,
                 transitionDuration: 0.2,
+                formatter: function(params) {
+                    return  params.name + ': ' + params.value.toFixed(1)
+                }
             },
             aria: {
                 enabled: true,
@@ -60,24 +63,26 @@ export default defineComponent({
                 min: 0,
                 max: 10,
                 inRange: {
-                    color: ['#313695', '#4575b4', '#74add1', '#abd9e9', '#e0f3f8', '#ffffbf', '#fee090', '#fdae61', '#f46d43', '#d73027', '#a50026'],
+                    color: [ '#ffffbf', '#fee090', '#fdae61', '#f46d43', '#d73027', '#a50026'],
                 },
                 text: ['High', 'Low'],
                 calculable: true,
             },
             series: [
                 {
-                    name: 'USA PopEstimates',
+                    name: 'BABA',
                     type: 'map',
-                    roam: true,
+                    roam: false,
                     map: 'USA',
-                    emphasis: { label: { show: true } },
+                    emphasis: { label: { 
+                        show: true,
+                        } 
+                    },
                     data: [],
                 },
             ],
         }
         this.myChart.setOption(this.option)
-
         this.myChart.on('click', (params) => {
             let id = this.getAreaId(params.name)
             if (id) {
@@ -94,37 +99,38 @@ export default defineComponent({
     methods: {
         // Add values from this.reports to this.option.series[0].data
         updateChart(date) {
-            // Extract data from current time
 
+            // Extract data from current time
             this.option.series[0].data.forEach((oldReport) => {
-                oldReport.itemStyle = { decal: { symbol: 'circles' } }
+                oldReport.itemStyle = { decal: { symbol: 'none' }}
             })
 
+            let newReports = []
             this.reports[date].forEach((newReport) => {
                 // Set necessary variables
                 let id = parseFloat(newReport.loc)
                 let location = this.getAreaName(id)
                 let value = this.getValue(newReport)
-
                 // If value does not exist, skip to next entry
-
                 if (value === -1) return
-
                 // If value for region does not exist, add it
-                if (this.option.series[0].data.findIndex((item) => item.name === location) === -1) {
-                    this.option.series[0].data.push({
+                if (newReports.findIndex((item) => item.name === location) === -1) {
+                    newReports.push({
                         name: location,
                         value: value,
-                        date: date,
                         itemStyle: { decal: { symbol: 'none' } },
                     })
                 } else {
                     // If value for region does exist, add new value to it and then split it
-                    this.option.series[0].data.find((item) => item.name === location).itemStyle = { decal: { symbol: 'none' } }
-                    this.option.series[0].data.find((item) => item.name === location).value += value
-                    this.option.series[0].data.find((item) => item.name === location).value /= 2
+                    newReports.find((item) => item.name === location).itemStyle = { decal: { symbol: 'none' } }
+                    newReports.find((item) => item.name === location).value += value
+                    newReports.find((item) => item.name === location).value /= 2
                 }
             })
+
+            // Add new data to chart
+            this.option.series[0].data = newReports
+
             // Assign data to option
             this.myChart.setOption(this.option)
         },
@@ -157,7 +163,6 @@ export default defineComponent({
         getValue(entry) {
             let value = 0
             let count = 0
-
             for (let i = 0; i < 6; i++) {
                 if (this.selectedCategories[i]) {
                     count++
