@@ -13,35 +13,10 @@ export default defineComponent({
     setup() {
         const areasStore = useAreasStore()
         const categoriesStore = useCategoriesStore()
-        let selectedCategory = ref(categoriesStore.selectedCategory)
-
         const keys = Object.keys(areasStore.reports).sort((a, b) => {
             return new Date(a) - new Date(b)
         })
-
         const categoryNames = Object.values(categoriesStore.categoryNames)
-
-        // const getDataPerCategory = (category) => {
-        //     let data = areasStore.perLineData.map((report) => {
-        //         return [report.datetime, parseInt(report.location), parseFloat(report[categoriesStore.categories[category]])]
-        //     })
-        //     return data
-        // }
-
-        // let dataPerCategory = []
-        // for (let category of Object.keys(categoriesStore.categories)) {
-        //     dataPerCategory.push({
-        //         id: category,
-        //         data: getDataPerCategory(category),
-        //     })
-        // }
-
-        // const filterCategoryDataPerArea = (category, area) => {
-        //     return dataPerCategory[category].data.filter((report) => {
-        //         return report[1] == area
-        //     })
-        // }
-
         const getDataPerLocation = (location) => {
             let data = []
             let dataPerLocation = areasStore.perLineData.filter((report) => report.location == location)
@@ -53,7 +28,6 @@ export default defineComponent({
                 data.push([report.datetime, 4, parseFloat(report['buildings']) || 0])
                 data.push([report.datetime, 5, parseFloat(report['shake_intensity']) || 0])
             }
-
             return data
         }
 
@@ -125,24 +99,15 @@ export default defineComponent({
         }
 
         var myChart1
-        var myChart2
-
-        // watch(
-        //     () => categoriesStore.selectedCategory,
-        //     (val) => {
-        //         selectedCategory.value = val
-        //         option.series[0].data = dataPerCategory[selectedCategory.value].data
-        //         myChart1.setOption(option)
-        //     }
-        // )
         let numberOfDataPointsToShow = 20
         let i = 1
         let option1
-        let localUpdateFrequency = categoriesStore.updateFreq
 
         watch(
             () => areasStore.selectedArea,
             (val) => {
+                console.log('hej', val)
+
                 option1 = getOptionsPerArea(areasStore.selectedArea)
 
                 if (i < numberOfDataPointsToShow) {
@@ -155,13 +120,17 @@ export default defineComponent({
             }
         )
 
-        watch(
-            () => categoriesStore.updateFreq,
-            (val) => {
-                console.log(val)
-                localUpdateFrequency = val
+        watch(categoriesStore.selectedCategories, async (newVal, oldVal) => {
+            const activeCategories = Object.values(newVal)
+            let shownCategories = []
+            for (let i in activeCategories) {
+                if (activeCategories[i]) {
+                    shownCategories.push(categoryNames[i])
+                }
             }
-        )
+            option1.yAxis.data = shownCategories
+            myChart1.setOption(option1)
+        })
 
         onMounted(() => {
             let chartDom1 = document.getElementById('main__heatmap_1')
@@ -191,14 +160,13 @@ export default defineComponent({
             }
         }
 
-        return { selectedCategory, getAreaName, areasStore }
+        return { getAreaName, areasStore }
     },
 })
 </script>
 
 <template>
     <div>
-        <h1 class="text-3xl text-white">{{ getAreaName(areasStore.selectedArea) }}</h1>
         <div id="main__heatmap_1" class="main__heatmap"></div>
     </div>
 </template>
@@ -211,7 +179,7 @@ export default defineComponent({
 }
 .main__heatmap {
     width: 100%;
-    height: 500px;
+    height: 300px;
 }
 #loading-spinner {
     position: absolute;
