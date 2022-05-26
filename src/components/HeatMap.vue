@@ -21,8 +21,6 @@ export default defineComponent({
 
         const categoryNames = Object.values(categoriesStore.categoryNames)
 
-        console.log('categoryNames', categoryNames)
-
         // const getDataPerCategory = (category) => {
         //     let data = areasStore.perLineData.map((report) => {
         //         return [report.datetime, parseInt(report.location), parseFloat(report[categoriesStore.categories[category]])]
@@ -56,7 +54,6 @@ export default defineComponent({
                 data.push([report.datetime, 5, parseFloat(report['shake_intensity']) || 0])
             }
 
-            console.log('data', data)
             return data
         }
 
@@ -138,26 +135,31 @@ export default defineComponent({
         //         myChart1.setOption(option)
         //     }
         // )
-        let numberOfDataPointsToView = 20
+        let numberOfDataPointsToShow = 20
         let i = 1
         let option1
+        let localUpdateFrequency = categoriesStore.updateFreq
 
         watch(
             () => areasStore.selectedArea,
             (val) => {
-                console.log('selectedArea', val)
-                let new_options = getOptionsPerArea(areasStore.selectedArea)
+                option1 = getOptionsPerArea(areasStore.selectedArea)
 
-                myChart1.setOption(new_options)
-
-                if (i < numberOfDataPointsToView) {
+                if (i < numberOfDataPointsToShow) {
                     option1.xAxis.data = keys.slice(0, i)
-                    console.log('keys', keys.slice(0, i))
                 } else {
-                    option1.xAxis.data = keys.slice(i - numberOfDataPointsToView, i)
-                    console.log('keys', keys.slice(i - numberOfDataPointsToView, i))
+                    option1.xAxis.data = keys.slice(i - numberOfDataPointsToShow, i)
                 }
-                myChart1.setOption(new_options)
+
+                myChart1.setOption(option1)
+            }
+        )
+
+        watch(
+            () => categoriesStore.updateFreq,
+            (val) => {
+                console.log(val)
+                localUpdateFrequency = val
             }
         )
 
@@ -171,20 +173,19 @@ export default defineComponent({
             myChart1.setOption(option1)
 
             setInterval(() => {
-                if (i < numberOfDataPointsToView) {
+                categoriesStore.currentDataPoint = keys[i]
+                if (i < numberOfDataPointsToShow) {
                     option1.xAxis.data = keys.slice(0, i)
-                    console.log(keys.slice(0, i))
                 } else {
-                    option1.xAxis.data = keys.slice(i - numberOfDataPointsToView, i)
-                    console.log(keys.slice(i - numberOfDataPointsToView, i))
+                    option1.xAxis.data = keys.slice(i - numberOfDataPointsToShow, i)
                 }
                 myChart1.setOption(option1)
                 i++
-            }, categoriesStore.updateFreq)
+                console.log(localUpdateFrequency)
+            }, localUpdateFrequency)
         })
 
         const getAreaName = (area) => {
-            console.log(areasStore.areas)
             for (let a of areasStore.areas) {
                 if (a.id == area) return a.name
             }
