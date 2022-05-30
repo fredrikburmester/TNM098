@@ -79,6 +79,9 @@ export default defineComponent({
                     orient: 'vertical',
                     right: '5%',
                     bottom: '40%',
+                    inRange : {   
+                        color: ['#ffffbf', '#fee090', '#fdae61', '#f46d43', '#d73027', '#a50026'], //From smaller to bigger value ->
+                    }
                 },
                 series: [
                     {
