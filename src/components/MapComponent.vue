@@ -47,14 +47,14 @@ export default defineComponent({
                 text: 'Areas',
                 left: '0',
             },
-            tooltip: {
-                trigger: 'item',
-                showDelay: 0,
-                transitionDuration: 0.2,
-                formatter: function (params) {
-                    return params.name + ': ' + params.value.toFixed(1)
-                },
-            },
+            // tooltip: {
+            //     trigger: 'item',
+            //     showDelay: 0,
+            //     transitionDuration: 0.2,
+            //     formatter: function (params) {
+            //         return params.name + ': ' + params.value.toFixed(1)
+            //     },
+            // },
             aria: {
                 enabled: true,
             },
@@ -80,6 +80,12 @@ export default defineComponent({
                         },
                     },
                     data: [],
+                    label: {
+                        show: true,
+                        position: 'top',
+                        color: 'black',
+                        fontSize: 10,
+                    },
                 },
             ],
         }
@@ -160,7 +166,7 @@ export default defineComponent({
                     this.updateChart(this.keys[i])
                 }
                 j++
-            }, 1000)
+            }, 100)
         },
 
         // Get value for currently selected category
