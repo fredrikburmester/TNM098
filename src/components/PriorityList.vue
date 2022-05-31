@@ -159,7 +159,7 @@ export default defineComponent({
                     this.updateChart(this.keys[i])
                 }
                 j++
-            }, 1000)
+            }, 100)
         },
         updateChart(key) {
             this.areasAndScore = []

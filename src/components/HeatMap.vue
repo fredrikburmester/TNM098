@@ -79,9 +79,9 @@ export default defineComponent({
                     orient: 'vertical',
                     right: '5%',
                     bottom: '40%',
-                    inRange : {   
+                    inRange: {
                         color: ['#ffffbf', '#fee090', '#fdae61', '#f46d43', '#d73027', '#a50026'], //From smaller to bigger value ->
-                    }
+                    },
                 },
                 series: [
                     {
@@ -102,7 +102,7 @@ export default defineComponent({
         }
 
         var myChart1
-        let numberOfDataPointsToShow = 20
+        let numberOfDataPointsToShow = 100
         let i = 1
         let option1
 
@@ -154,7 +154,7 @@ export default defineComponent({
                     i++
                 }
                 j++
-            }, 1000)
+            }, 100)
         })
 
         const getAreaName = (area) => {

@@ -6,8 +6,8 @@
             {{ categoriesStore.isPaused ? 'Play' : 'Pause' }}
         </button>
         <div>
-            <p class="text-white">Time between reports: {{ categoriesStore.updateFrequency }}s</p>
-            <input id="updatefreq" v-model="categoriesStore.updateFrequency" class="" type="range" name="updatefreq" min="1" max="10" />
+            <p class="text-white">Time between reports: {{ categoriesStore.updateFrequency }}/10 seconds</p>
+            <input id="updatefreq" v-model="categoriesStore.updateFrequency" class="" type="range" name="updatefreq" min="1" max="100" />
         </div>
     </div>
 </template>
