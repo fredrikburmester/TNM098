@@ -163,6 +163,8 @@ export default defineComponent({
         },
         updateChart(key) {
             this.areasAndScore = []
+            let numberOfReportsMap = {};
+            let maxNumberOfReports = 0;
             for (let area of this.areas) {
                 let score = 0
                 let count = 0
@@ -179,8 +181,14 @@ export default defineComponent({
                         })
                     }
                 })
+
                 // Take the average
                 if (count > 1) score = score / count
+
+                // Save how many reports each area.id has, used for weighing later
+                numberOfReportsMap[area.name] = relevantReports.length;
+                // Save the max number of reports, used for weighing later
+                maxNumberOfReports = relevantReports.length > maxNumberOfReports ? relevantReports.length : maxNumberOfReports;
 
                 // Finally add to our areas and score array
                 let obj = []
@@ -188,6 +196,18 @@ export default defineComponent({
                 obj.push(area.name)
                 this.areasAndScore.push(obj)
             }
+
+            Object.keys(numberOfReportsMap).forEach(areaName => {
+                if(maxNumberOfReports !== 0) { 
+                    // Calculate weight factor
+                    const weightFactor = 1 + numberOfReportsMap[areaName] / maxNumberOfReports;
+                    // Make sure weight factor affects score for areaName
+                    let objIndex = this.areasAndScore.findIndex(e => e[1] == areaName);
+                    this.areasAndScore[objIndex][0] *= weightFactor;
+                    this.areasAndScore[objIndex][0] *= 0.5;
+                }
+            });
+
             this.myChart.setOption({
                 ...this.myChart.option,
                 dataset: {
