@@ -16,18 +16,42 @@ export default defineComponent({
         const keys = Object.keys(areasStore.reports).sort((a, b) => {
             return new Date(a) - new Date(b)
         })
+
         const categoryNames = Object.values(categoriesStore.categoryNames)
         const getDataPerLocation = (location) => {
             let data = []
             let dataPerLocation = areasStore.perLineData.filter((report) => report.location == location)
-            for (let report of dataPerLocation) {
-                data.push([report.datetime, 0, parseFloat(report['sewer_and_water']) || 0])
-                data.push([report.datetime, 1, parseFloat(report['power']) || 0])
-                data.push([report.datetime, 2, parseFloat(report['roads_and_bridges']) || 0])
-                data.push([report.datetime, 3, parseFloat(report['medical']) || 0])
-                data.push([report.datetime, 4, parseFloat(report['buildings']) || 0])
-                data.push([report.datetime, 5, parseFloat(report['shake_intensity']) || 0])
+            let previousDatetime = null
+            let count = 1
+            for (let i in dataPerLocation) {
+                const report = dataPerLocation[i]
+
+                if (i == 0) {
+                    Object.keys(pastReport).forEach((key) => {
+                        data.push([report.datetime, 0, parseFloat(report[key]) || 0])
+                    })
+                    continue
+                }
+
+                const pastReport = dataPerLocation[i - 1]
+                if (report.datetime == previousDatetime) {
+                    count++
+                    Object.keys(pastReport).forEach((key) => {
+                        pastReport[key] += report[key]
+                    })
+                } else if (count) {
+                    Object.keys(pastReport).forEach((key) => {
+                        pastReport[key] = pastReport[key] / count
+                    })
+                } else {
+                    Object.keys(pastReport).forEach((key) => {
+                        data.push([report.datetime, 0, parseFloat(report[key]) || 0])
+                    })
+                }
+
+                previousDatetime = report.datetime
             }
+            console.log(data)
             return data
         }
 
