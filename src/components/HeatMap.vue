@@ -21,33 +21,30 @@ export default defineComponent({
         const getDataPerLocation = (location) => {
             let data = []
             let dataPerLocation = areasStore.perLineData.filter((report) => report.location == location)
+
+            let lastReport = dataPerLocation[0]
             let count = 1
-            for (let i = 0; i < dataPerLocation.length; i++) {
-                const report = dataPerLocation[i]
-                if (i == 0) {
-                    Object.keys(report).forEach((key) => {
-                        data.push([report.datetime, 0, parseFloat(report[key]) || 0])
+            for (let i = 1; i < dataPerLocation.length; i++) {
+                let report = dataPerLocation[i]
+                let newReport = lastReport
+
+                if (report.datetime !== lastReport.datetime) {
+                    Object.keys(newReport).forEach((key) => {
+                        if (key === 'datetime' || key === 'location') return
+                        data.push([newReport.datetime, categoriesStore.categoriesEnum[key], parseFloat(newReport[key]) / count || 0])
                     })
-                    continue
+                    count = 1
+                } else {
+                    Object.keys(newReport).forEach((key) => {
+                        if (key === 'datetime' || key === 'location') return
+                        newReport[key] += report[key]
+                    })
+                    count++
                 }
 
-                const pastReport = dataPerLocation[i - 1]
-                if (report.datetime == pastReport.datetime) {
-                    count++
-                    Object.keys(pastReport).forEach((key) => {
-                        pastReport[key] += report[key]
-                    })
-                } else if (count > 1) {
-                    Object.keys(pastReport).forEach((key) => {
-                        pastReport[key] = pastReport[key] / count
-                    })
-                } else {
-                    Object.keys(pastReport).forEach((key) => {
-                        data.push([report.datetime, 0, parseFloat(report[key]) || 0])
-                    })
-                }
+                lastReport = report
             }
-            console.log('data', data)
+
             return data
         }
 
@@ -129,8 +126,6 @@ export default defineComponent({
         watch(
             () => areasStore.selectedArea,
             (val) => {
-                console.log('hej', val)
-
                 option1 = getOptionsPerArea(areasStore.selectedArea)
 
                 if (i < numberOfDataPointsToShow) {
