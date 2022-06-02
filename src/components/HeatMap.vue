@@ -21,25 +21,23 @@ export default defineComponent({
         const getDataPerLocation = (location) => {
             let data = []
             let dataPerLocation = areasStore.perLineData.filter((report) => report.location == location)
-            let previousDatetime = null
             let count = 1
-            for (let i in dataPerLocation) {
+            for (let i = 0; i < dataPerLocation.length; i++) {
                 const report = dataPerLocation[i]
-
                 if (i == 0) {
-                    Object.keys(pastReport).forEach((key) => {
+                    Object.keys(report).forEach((key) => {
                         data.push([report.datetime, 0, parseFloat(report[key]) || 0])
                     })
                     continue
                 }
 
                 const pastReport = dataPerLocation[i - 1]
-                if (report.datetime == previousDatetime) {
+                if (report.datetime == pastReport.datetime) {
                     count++
                     Object.keys(pastReport).forEach((key) => {
                         pastReport[key] += report[key]
                     })
-                } else if (count) {
+                } else if (count > 1) {
                     Object.keys(pastReport).forEach((key) => {
                         pastReport[key] = pastReport[key] / count
                     })
@@ -48,10 +46,8 @@ export default defineComponent({
                         data.push([report.datetime, 0, parseFloat(report[key]) || 0])
                     })
                 }
-
-                previousDatetime = report.datetime
             }
-            console.log(data)
+            console.log('data', data)
             return data
         }
 
