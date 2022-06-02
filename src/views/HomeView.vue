@@ -61,8 +61,6 @@ export default {
             })
         }
 
-        console.log(local_area_names)
-
         let lines
         await fetch('mc1-reports-data.txt')
             .then((res) => res.text())
