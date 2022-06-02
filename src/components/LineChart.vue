@@ -109,8 +109,6 @@ export default defineComponent({
             let i = 0
             let data = this.getDataPerLocation(this.selectedArea)
 
-            //console.log(data)
-            //console.log('Data for this location: ', data)
             let currentKeys = []
 
             let j = 0

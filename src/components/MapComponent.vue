@@ -39,9 +39,6 @@ export default defineComponent({
             return new Date(a) - new Date(b)
         })
 
-        console.log(this.areas)
-        console.log(this.reports)
-
         this.option = {
             title: {
                 text: 'Areas',
@@ -99,7 +96,6 @@ export default defineComponent({
                     this.selectedArea = id
                 }
             }
-            //console.log(this.selectedArea)
         })
         this.updateChartTimer()
     },

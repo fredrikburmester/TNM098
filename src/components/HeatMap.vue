@@ -16,18 +16,35 @@ export default defineComponent({
         const keys = Object.keys(areasStore.reports).sort((a, b) => {
             return new Date(a) - new Date(b)
         })
+
         const categoryNames = Object.values(categoriesStore.categoryNames)
         const getDataPerLocation = (location) => {
             let data = []
             let dataPerLocation = areasStore.perLineData.filter((report) => report.location == location)
-            for (let report of dataPerLocation) {
-                data.push([report.datetime, 0, parseFloat(report['sewer_and_water']) || 0])
-                data.push([report.datetime, 1, parseFloat(report['power']) || 0])
-                data.push([report.datetime, 2, parseFloat(report['roads_and_bridges']) || 0])
-                data.push([report.datetime, 3, parseFloat(report['medical']) || 0])
-                data.push([report.datetime, 4, parseFloat(report['buildings']) || 0])
-                data.push([report.datetime, 5, parseFloat(report['shake_intensity']) || 0])
+
+            let lastReport = dataPerLocation[0]
+            let count = 1
+            for (let i = 1; i < dataPerLocation.length; i++) {
+                let report = dataPerLocation[i]
+                let newReport = lastReport
+
+                if (report.datetime !== lastReport.datetime) {
+                    Object.keys(newReport).forEach((key) => {
+                        if (key === 'datetime' || key === 'location') return
+                        data.push([newReport.datetime, categoriesStore.categoriesEnum[key], parseFloat(newReport[key]) / count || 0])
+                    })
+                    count = 1
+                } else {
+                    Object.keys(newReport).forEach((key) => {
+                        if (key === 'datetime' || key === 'location') return
+                        newReport[key] += report[key]
+                    })
+                    count++
+                }
+
+                lastReport = report
             }
+
             return data
         }
 
@@ -109,8 +126,6 @@ export default defineComponent({
         watch(
             () => areasStore.selectedArea,
             (val) => {
-                console.log('hej', val)
-
                 option1 = getOptionsPerArea(areasStore.selectedArea)
 
                 if (i < numberOfDataPointsToShow) {

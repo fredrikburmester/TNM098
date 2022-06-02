@@ -6,21 +6,17 @@
                 <option disabled selected>Select Value</option>
                 <option v-for="(category, index) in categories" :key="index" :value="index">{{ getNiceCategoryName(index) }}</option>
             </select> -->
-            <div v-for='category in Object.keys(this.categories)' :key="category">
+            <div v-for="category in Object.keys(categories)" :key="category">
                 <label class="label cursor-pointer">
-                    <span class="text-white">{{getNiceCategoryName(category)}}</span>
-                    <input 
-                        v-if="this.selectedCategories[category] === true" 
-                        @click="onToggle(category, false)" 
-                        type="checkbox" 
-                        class="toggle toggle-primary" checked 
+                    <span class="text-white">{{ getNiceCategoryName(category) }}</span>
+                    <input
+                        v-if="selectedCategories[category] === true"
+                        type="checkbox"
+                        class="toggle toggle-primary"
+                        checked
+                        @click="onToggle(category, false)"
                     />
-                    <input 
-                        v-else 
-                        @click="onToggle(category, true)" 
-                        type="checkbox" 
-                        class="toggle toggle-primary" 
-                    />
+                    <input v-else type="checkbox" class="toggle toggle-primary" @click="onToggle(category, true)" />
                 </label>
             </div>
         </div>
@@ -53,9 +49,8 @@ export default {
             return this.categoryNames[category]
         },
         onToggle(categoryKey, add) {
-            this.selectedCategories[categoryKey] = add; 
-            console.log(this.selectedCategories);
-        }
+            this.selectedCategories[categoryKey] = add
+        },
     },
 }
 </script>
