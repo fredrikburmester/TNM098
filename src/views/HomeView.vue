@@ -27,12 +27,11 @@ import OptionsComponent from '../components/OptionsComponent.vue'
 import PriorityList from '../components/PriorityList.vue'
 import geoJson from '@/assets/geoJson.json'
 import { useAreasStore } from '@/stores/areas'
-import CandleChart from '../components/CandleChart.vue'
 import HeatMap from '../components/HeatMap.vue'
 import HeaderComponent from '../components/HeaderComponent.vue'
 
 export default {
-    components: { MapComponent, OptionsComponent, PriorityList, CandleChart, HeatMap, HeaderComponent },
+    components: { MapComponent, OptionsComponent, PriorityList, HeatMap, HeaderComponent },
     props: {},
     data() {
         return {

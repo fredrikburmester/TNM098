@@ -1,9 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import NotFoundComponent from '../components/NotFoundComponent.vue'
 import HomeView from '../views/HomeView.vue'
-import VisualizationOneView from '../views/VisualizationOneView.vue'
-import VisTwo from '../views/VisTwo.vue'
-import VisThree from '../views/VisThree.vue'
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -12,30 +9,6 @@ const router = createRouter({
             path: '/',
             name: 'Home',
             component: HomeView,
-            meta: {
-                requiresAuth: false,
-            },
-        },
-        {
-            path: '/v1',
-            name: 'VisOne',
-            component: VisualizationOneView,
-            meta: {
-                requiresAuth: false,
-            },
-        },
-        {
-            path: '/v2',
-            name: 'VisTwo',
-            component: VisTwo,
-            meta: {
-                requiresAuth: false,
-            },
-        },
-        {
-            path: '/v3',
-            name: 'VisThree',
-            component: VisThree,
             meta: {
                 requiresAuth: false,
             },
