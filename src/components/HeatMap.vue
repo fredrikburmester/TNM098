@@ -3,7 +3,7 @@ import 'echarts'
 import { defineComponent, watch } from 'vue'
 import { useAreasStore } from '@/stores/areas'
 import { useCategoriesStore } from '@/stores/categories'
-import { ref, onMounted } from 'vue'
+import { onMounted } from 'vue'
 import * as echarts from 'echarts'
 
 export default defineComponent({
@@ -125,7 +125,7 @@ export default defineComponent({
 
         watch(
             () => areasStore.selectedArea,
-            (val) => {
+            () => {
                 option1 = getOptionsPerArea(areasStore.selectedArea)
 
                 if (i < numberOfDataPointsToShow) {
@@ -138,7 +138,7 @@ export default defineComponent({
             }
         )
 
-        watch(categoriesStore.selectedCategories, async (newVal, oldVal) => {
+        watch(categoriesStore.selectedCategories, async (newVal) => {
             const activeCategories = Object.values(newVal)
             let shownCategories = []
             for (let i in activeCategories) {
