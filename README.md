@@ -4,6 +4,8 @@
 ECharts: https://echarts.apache.org/en/option.html#title
 Vue-echarts: https://github.com/ecomfe/vue-echarts
 
+![This is an image]([https://myoctocat.com/assets/images/base-octocat.svg](https://raw.githubusercontent.com/fredrikburmester/TNM098/main/public/tnm098_screenshot.png))
+
 ## Running the project
 ```
 npm i
