@@ -19,6 +19,7 @@ let keys = []
 let myChart = null
 let areasAndScore = []
 let areas = []
+let latestKey = 0;
 
 for (let area of areaStore.areas) {
     let obj = []
@@ -102,7 +103,7 @@ onMounted(() => {
 })
 
 watch(categoriesStore.selectedCategories, (newVal, oldVal) => {
-    console.log('hej')
+    updateChart(null);
 })
 
 const updateChartTimer = () => {
@@ -118,6 +119,10 @@ const updateChartTimer = () => {
 }
 
 const updateChart = (key) => {
+    if (key === null) {
+        key = latestKey;
+    }
+    latestKey = key;    
     areasAndScore = []
     let numberOfReportsMap = {}
     let maxNumberOfReports = 0
