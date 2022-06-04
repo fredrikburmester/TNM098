@@ -2,184 +2,173 @@
     <div id="main__map"></div>
 </template>
 
-<script>
+<script setup>
 import 'echarts'
-import { THEME_KEY } from 'vue-echarts'
-import { defineComponent } from 'vue'
+import { onMounted, watch } from 'vue'
 import geoJson from '@/assets/geoJson.json'
 import * as echarts from 'echarts'
 import { useAreasStore } from '@/stores/areas'
-import { mapWritableState } from 'pinia'
 import { useCategoriesStore } from '../stores/categories'
 
-export default defineComponent({
-    name: 'HelloWorld',
-    provide: {
-        [THEME_KEY]: 'light',
-    },
-    data() {
-        return {
-            loading: true,
-            option: [],
-            opacity: 0.2,
-            keys: [],
-            myChart: null,
-        }
-    },
-    computed: {
-        ...mapWritableState(useAreasStore, ['areas', 'reports', 'perLineData', 'selectedArea', 'areaNames']),
-        ...mapWritableState(useCategoriesStore, ['categories', 'selectedCategories', 'categoryNames', 'updateFrequency', 'isPaused']),
-    },
-    mounted() {
-        let chartDom = document.getElementById('main__map')
-        this.myChart = echarts.init(chartDom, 'dark')
-        echarts.registerMap('USA', geoJson)
+let keys = []
+let myChart = null
+let areas = []
+let i = -1
 
-        this.keys = Object.keys(this.reports).sort((a, b) => {
-            return new Date(a) - new Date(b)
-        })
+const categoriesStore = useCategoriesStore()
+const areaStore = useAreasStore()
+    
 
-        this.option = {
-            title: {
-                text: 'Areas',
-                left: '0',
-            },
-            // tooltip: {
-            //     trigger: 'item',
-            //     showDelay: 0,
-            //     transitionDuration: 0.2,
-            //     formatter: function (params) {
-            //         return params.name + ': ' + params.value.toFixed(1)
-            //     },
-            // },
-            aria: {
-                enabled: true,
-            },
-            visualMap: {
-                left: 'right',
-                min: 0,
-                max: 10,
-                inRange: {
-                    color: ['#ffffbf', '#fee090', '#fdae61', '#f46d43', '#d73027', '#a50026'],
-                },
-                text: ['High', 'Low'],
-                calculable: true,
-            },
-            series: [
-                {
-                    name: 'BABA',
-                    type: 'map',
-                    roam: false,
-                    map: 'USA',
-                    emphasis: {
-                        label: {
-                            show: true,
-                        },
-                    },
-                    data: [],
-                    label: {
-                        show: true,
-                        position: 'top',
-                        color: 'black',
-                        fontSize: 10,
-                    },
-                },
-            ],
-        }
-        this.myChart.setOption(this.option)
-        this.myChart.on('click', (params) => {
-            let id = this.getAreaId(params.name)
-            if (id) {
-                if (id === this.selectedArea) {
-                    this.selectedArea = 1
-                } else {
-                    this.selectedArea = id
-                }
-            }
-        })
-        this.updateChartTimer()
-    },
-    methods: {
-        // Add values from this.reports to this.option.series[0].data
-        updateChart(date) {
-            // Extract data from current time
-            this.option.series[0].data.forEach((oldReport) => {
-                oldReport.itemStyle = { decal: { symbol: 'none' } }
-            })
 
-            let newReports = []
-            this.reports[date].forEach((newReport) => {
-                // Set necessary variables
-                let id = parseFloat(newReport.loc)
-                let location = this.getAreaName(id)
-                let value = this.getValue(newReport)
-                // If value does not exist, skip to next entry
-                if (value === -1) return
-                // If value for region does not exist, add it
-                if (newReports.findIndex((item) => item.name === location) === -1) {
-                    newReports.push({
-                        name: location,
-                        value: value,
-                        itemStyle: { decal: { symbol: 'none' } },
-                    })
-                } else {
-                    // If value for region does exist, add new value to it and then split it
-                    newReports.find((item) => item.name === location).itemStyle = { decal: { symbol: 'none' } }
-                    newReports.find((item) => item.name === location).value += value
-                    newReports.find((item) => item.name === location).value /= 2
-                }
-            })
-
-            // Add new data to chart
-            this.option.series[0].data = newReports
-
-            // Assign data to option
-            this.myChart.setOption(this.option)
-        },
-
-        getAreaId(name) {
-            for (let area of this.areas) {
-                if (area.name == name) {
-                    return area.id
-                }
-            }
-        },
-
-        getAreaName(id) {
-            for (let area of this.areas) {
-                if (area.id == id) {
-                    return area.name
-                }
-            }
-        },
-        //Update chart every second
-        updateChartTimer() {
-            let i = -1
-            let j = 0
-            setInterval(() => {
-                if (!this.isPaused && !(j % this.updateFrequency)) {
-                    i++
-                    this.updateChart(this.keys[i])
-                }
-                j++
-            }, 100)
-        },
-
-        // Get value for currently selected category
-        getValue(entry) {
-            let value = 0
-            let count = 0
-            for (let i = 0; i < 6; i++) {
-                if (this.selectedCategories[i]) {
-                    count++
-                    value += entry[this.categories[i]]
-                }
-            }
-            if (count === 0) return -1
-            return value / count
-        },
-    },
+keys = Object.keys(areaStore.reports).sort((a, b) => {
+    return new Date(a) - new Date(b)
 })
+
+let option = {
+    title: {
+        text: 'Areas',
+        left: '0',
+    },
+    aria: {
+        enabled: true,
+    },
+    visualMap: {
+        left: 'right',
+        min: 0,
+        max: 10,
+        inRange: {
+            color: ['#ffffbf', '#fee090', '#fdae61', '#f46d43', '#d73027', '#a50026'],
+        },
+        text: ['High', 'Low'],
+        calculable: true,
+    },
+    series: [
+        {
+            name: 'BABA',
+            type: 'map',
+            roam: false,
+            map: 'USA',
+            emphasis: {
+                label: {
+                    show: true,
+                },
+            },
+            data: [],
+            label: {
+                show: true,
+                position: 'top',
+                color: 'black',
+                fontSize: 10,
+            },
+        },
+    ],
+}
+
+watch(categoriesStore.selectedCategories, (newVal, oldVal) => {
+    console.log('hej')
+})
+
+onMounted(() => {
+    let chartDom = document.getElementById('main__map')
+    myChart = echarts.init(chartDom, 'dark')
+    echarts.registerMap('USA', geoJson)
+
+    myChart.setOption(option)
+    myChart.on('click', (params) => {
+        let id = getAreaId(params.name)
+        if (id) {
+            if (id === areaStore.selectedArea) {
+                areaStore.selectedArea = 1
+            } else {
+                areaStore.selectedArea = id
+            }
+        }
+    })
+    updateChartTimer()
+})
+watch(categoriesStore.selectedCategories, (newVal, oldVal) => {
+    console.log("Updated Chart")
+    updateChart(keys[i])
+})
+
+   
+// Add values from this.reports to this.option.series[0].data
+const updateChart = (date) => {
+    
+    // Extract data from current time
+    option.series[0].data.forEach((oldReport) => {
+        oldReport.itemStyle = { decal: { symbol: 'none' } }
+    })
+
+    let newReports = []
+    areaStore.reports[date].forEach((newReport) => {
+        // Set necessary variables
+        let id          = parseFloat(newReport.loc)
+        let location    = getAreaName(id)
+        let value       = getValue(newReport)
+        // If value does not exist, skip to next entry
+        if (value === -1) {
+            return
+        }
+        // If value for region does not exist, add it
+        if (newReports.findIndex((item) => item.name === location) === -1) {
+            newReports.push({
+                name: location,
+                value: value,
+                itemStyle: { decal: { symbol: 'none' } },
+            })
+        } else {
+            // If value for region does exist, add new value to it and then split it
+            newReports.find((item) => item.name === location).itemStyle = { decal: { symbol: 'none' } }
+            newReports.find((item) => item.name === location).value += value
+            newReports.find((item) => item.name === location).value /= 2
+        }
+        // Add new data to chart
+        option.series[0].data = newReports
+        myChart.setOption(option)
+        // Assign data to option
+    })
+}
+const getAreaId = (name) => {
+    for (let area of areas) {
+        if (area.name == name) {
+            return area.id
+        }
+    }
+}
+
+const getAreaName = (id) => {
+    for (let area of areaStore.areas) {
+        if (area.id == id) {
+            return area.name
+        }
+    }
+}
+//Update chart every second
+const updateChartTimer = () => {
+    let j = 0
+    setInterval(() => {
+        if (!categoriesStore.isPaused && !(j % categoriesStore.updateFrequency)) {
+            i++
+            updateChart(keys[i])
+        }
+        j++
+    }, 100)
+}
+
+// Get value for currently selected category
+const getValue = (entry) => {
+    let value = 0
+    let count = 0
+    for (let k = 0; k < 6; k++) {
+        if (categoriesStore.selectedCategories[k]) {
+            count++
+            value += entry[categoriesStore.categories[k]]
+        }
+    }
+    if (count === 0) return -1
+    return value / count
+}
 </script>
 
 <style scoped>

@@ -163,7 +163,7 @@ const updateChart = (key) => {
             areasAndScore[objIndex][0] *= 0.5
         }
     })
-
+    
     myChart.setOption({
         ...myChart.option,
         dataset: {
